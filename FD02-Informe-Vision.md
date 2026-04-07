@@ -215,7 +215,7 @@ El Agente de IA para Revisión y Asesoría de Tesis es un sistema web independie
  
 Desde el punto de vista técnico, el sistema estará conformado por los siguientes módulos principales:
  
-- **Motor de revisión documental:** encargado de analizar archivos, evaluando aspectos como la estructura, coherencia, redacción y uso correcto de citas mediante inteligencia artificial.
+- **Motor de revisión documental:** encargado de analizar archivos, evaluando aspectos como la estructura, coherencia, redacción y uso correcto de citas mediante inteligencia artificial..
 - **Agente conversacional:** un chat interactivo que permitirá al usuario realizar consultas sobre metodología, normas académicas y desarrollo de la tesis.
 - **Módulo de detección de similitudes:** permitirá identificar posibles coincidencias con otras fuentes, ayudando a prevenir el plagio.
 - **Panel de seguimiento:** mostrará el avance del trabajo por capítulos, facilitando el control tanto para el estudiante como para el asesor.
