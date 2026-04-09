@@ -1,230 +1,205 @@
 <center>
 
-[comment]: <img src="./media/media/image1.png" style="width:1.088in;height:1.46256in" alt="escudo.png" />
+![./media/logo-upt.png](./media/logo-upt.png)
 
-![./media/media/image1.png](./media/logo-upt.png)
+[cite_start]**UNIVERSIDAD PRIVADA DE TACNA** [cite: 1]
 
-**UNIVERSIDAD PRIVADA DE TACNA**
+[cite_start]**FACULTAD DE INGENIERÍA** [cite: 1]
 
-**FACULTAD DE INGENIERIA**
+[cite_start]**Escuela Profesional de Ingeniería de Sistemas** [cite: 1]
 
-**Escuela Profesional de Ingeniería de Sistemas**
+[cite_start]**Proyecto: "Agente de IA para Revisión y Asesoría de Tesis"** [cite: 1]
 
-**Proyecto *{Nombre de Proyecto}***
+[cite_start]Curso: Patrones de Software [cite: 1]
 
-Curso: *{Nombre de Asignatura}*
+Docente: Ing. [cite_start]Patrick Cuadros Quiroga [cite: 1]
 
-Docente: *{Nombre de Docente}*
+[cite_start]Integrantes: [cite: 1]
 
-Integrantes:
+[cite_start]**Ayala Ramos, Carlos Daniel (2022074266)** [cite: 1]
+[cite_start]**Loyola Vilca, Renzo Fernando (2021072615)** [cite: 1]
+[cite_start]**Vargas Candia, Hashira Belén (2022075480)** [cite: 1]
 
-***{Apellidos y nombres del estudiante (código universitario)}***
+[cite_start]**Tacna – Perú** [cite: 1]
 
-**Tacna – Perú**
+[cite_start]**2026** [cite: 1]
 
-***{Año}***
-
-**  
-**
+** **
 </center>
 <div style="page-break-after: always; visibility: hidden">\pagebreak</div>
 
-Sistema *{Nombre del Sistema}*
+[cite_start]Sistema Agente de IA para Revisión y Asesoría de Tesis [cite: 1]
 
-Informe de Factibilidad
+[cite_start]Informe de Factibilidad [cite: 1]
 
-Versión *{1.0}*
+[cite_start]Versión 1.0 [cite: 1]
 
-|CONTROL DE VERSIONES||||||
+[cite_start]|CONTROL DE VERSIONES|||||| [cite: 1]
 | :-: | :- | :- | :- | :- | :- |
-|Versión|Hecha por|Revisada por|Aprobada por|Fecha|Motivo|
-|1\.0|MPV|ELV|ARV|10/10/2020|Versión Original|
+[cite_start]|Versión|Hecha por|Revisada por|Aprobada por|Fecha|Motivo| [cite: 1]
+[cite_start]|1.0|-|-|-|10/04/2025|Versión Original| [cite: 1]
 
 <div style="page-break-after: always; visibility: hidden">\pagebreak</div>
 
-# **INDICE GENERAL**
+# [cite_start]**ÍNDICE GENERAL** [cite: 1]
 
-[1. Descripción del Proyecto](#_Toc52661346)
+[1. [cite_start]Descripción del Proyecto](#_Toc52661346) [cite: 1]
 
-[2. Riesgos](#_Toc52661347)
+[cite_start][1.2 Duración del proyecto](#_Toc52661346) [cite: 1]
 
-[3. Análisis de la Situación actual](#_Toc52661348)
+[cite_start][1.3 Descripción](#_Toc52661346) [cite: 1]
 
-[4. Estudio de Factibilidad](#_Toc52661349)
+[cite_start][1.4 Objetivos](#_Toc52661346) [cite: 1]
 
-[4.1 Factibilidad Técnica](#_Toc52661350)
+[2. [cite_start]Riesgos](#_Toc52661347) [cite: 1]
 
-[4.2 Factibilidad económica](#_Toc52661351)
+[3. [cite_start]Análisis de la Situación actual](#_Toc52661348) [cite: 1]
 
-[4.3 Factibilidad Operativa](#_Toc52661352)
+[4. [cite_start]Estudio de Factibilidad](#_Toc52661349) [cite: 1]
 
-[4.4 Factibilidad Legal](#_Toc52661353)
+[cite_start][4.1 Factibilidad Técnica](#_Toc52661350) [cite: 1]
 
-[4.5 Factibilidad Social](#_Toc52661354)
+[cite_start][4.2 Factibilidad Económica](#_Toc52661351) [cite: 1]
 
-[4.6 Factibilidad Ambiental](#_Toc52661355)
+[cite_start][4.3 Factibilidad Operativa](#_Toc52661352) [cite: 1]
 
-[5. Análisis Financiero](#_Toc52661356)
+[cite_start][4.4 Factibilidad Legal](#_Toc52661353) [cite: 1]
 
-[6. Conclusiones](#_Toc52661357)
+[cite_start][4.5 Factibilidad Ambiental](#_Toc52661355) [cite: 1]
 
+[5. [cite_start]Análisis Financiero](#_Toc52661356) [cite: 1]
 
-<div style="page-break-after: always; visibility: hidden">\pagebreak</div>
+[6. [cite_start]Conclusiones](#_Toc52661357) [cite: 1]
 
-**<u>Informe de Factibilidad</u>**
-
-1. <span id="_Toc52661346" class="anchor"></span>**Descripción del Proyecto**
-
-    1.1. Nombre del proyecto
-
-    1.2. Duración del proyecto
-
-    1.3. Descripción
-
-        En que consiste el proyecto/importancia del mismo, contexto en que se va desenvolver
-
-    1.4. Objetivos
-
-        1.4.1 Objetivo general
-        1.4.2 Objetivos Específicos
-            Para cada objetivo específico se indicara que se va a lograr
 
 <div style="page-break-after: always; visibility: hidden">\pagebreak</div>
 
-2. <span id="_Toc52661347" class="anchor"></span>**Riesgos**
+[cite_start]**<u>Informe de Factibilidad</u>** [cite: 1]
 
-    Señale los riesgos que pudieran afectar el éxito del proyecto.}*
+1. [cite_start]<span id="_Toc52661346" class="anchor"></span>**Descripción del Proyecto** [cite: 1]
 
-<div style="page-break-after: always; visibility: hidden">\pagebreak</div>
+    1.1. [cite_start]Nombre del proyecto [cite: 1]
 
-3. <span id="_Toc52661348" class="anchor"></span>**Análisis de la Situación actual**
+    Sistema Agente de IA para Revisión y Asesoría de Tesis. [cite: 1]
 
-    3.1. Planteamiento del problema
+    1.2. Duración del proyecto [cite: 1]
 
-            Describa antecedentes y situación actual, explicando la problemática y/o necesidad que será resuelta con el proyecto propuesto.
+    | FASES | DURACIÓN | [cite: 1]
+    | :--- | :--- |
+    | INICIO | DEL 31/03/2026 AL 04/04/2026 | [cite: 1]
+    | ELABORACIÓN | DEL 05/04/2026 AL 05/05/2026 | [cite: 1]
+    | CONSTRUCCIÓN | DEL 06/05/2026 AL 31/05/2026 | [cite: 1]
+    | TRANSICIÓN | DEL 01/06/2026 AL 18/06/2026 | [cite: 1]
 
-    3.2. Consideraciones de hardware y software
+    1.3. Descripción [cite: 1]
 
-            Hardware y software posibles para la implementación, se analizara lo que existe y es alcanzable, se evaluara que tecnología se puede > utilizar en el proyecto.
+    El sistema tiene como propósito modernizar y agilizar el proceso de revisión de tesis universitarias. [cite: 1] Actualmente, los tesistas sufren largas esperas para recibir retroalimentación, y los asesores están saturados de trabajo. [cite: 1] Con este nuevo sistema web, se busca brindar una plataforma impulsada por Inteligencia Artificial (mediante LLMs como Gemini u OpenAI) que permita pre-evaluar la redacción, el formato (APA, IEEE, etc.), la coherencia metodológica y detectar posibles plagios, sirviendo como un "co-asesor" disponible 24/7. [cite: 1]
 
-<div style="page-break-after: always; visibility: hidden">\pagebreak</div>
+    1.4. Objetivos [cite: 1]
 
-4. <span id="_Toc52661349" class="anchor"></span>**Estudio de
-    Factibilidad**
+    1.4.1 Objetivo general [cite: 1]
+    Desarrollar e implementar un Agente de IA web que optimice los tiempos de revisión de tesis, mejorando la calidad académica de los documentos y reduciendo la carga operativa de los asesores humanos. [cite: 1]
 
-    Describir los resultados que esperan alcanzar del estudio de factibilidad, las actividades que se realizaron para preparar la evaluación de factibilidad y por quien fue aprobado.
-
-    4.1. <span id="_Toc52661350" class="anchor"></span>Factibilidad Técnica
-
-        El estudio de viabilidad técnica se enfoca en obtener un entendimiento de los recursos tecnológicos disponibles actualmente y su aplicabilidad a las necesidades que se espera tenga el proyecto. En el caso de tecnología informática esto implica una evaluación del hardware y software y como este puede cubrir las necesidades del sistema propuesto.
-
-        Realizar una evaluación de la tecnología actual existente y la posibilidad de utilizarla en el desarrollo e implantación del sistema.*
-
-        Describir acerca del hardware (equipos, servidor), software (aplicaciones, navegadores, sistemas operativos, dominio, internet, infraestructura de red física, etc.
-
-    4.2. <span id="_Toc52661351" class="anchor"></span>Factibilidad Económica
-
-        El propósito del estudio de viabilidad económica, es determinar los beneficios económicos del proyecto o sistema propuesto para la organización, en contraposición con los costos.
-        Como se mencionó anteriormente en el estudio de factibilidad técnica wvaluar si la institución (departamento de TI) cuenta con las herramientas necesarias para la implantación del sistema y evaluar si la propuesta requiere o no de una inversión inicial en infraestructura informática.
-        Se plantearán los costos del proyecto.
-        Costeo del Proyecto: Consiste en estimar los costos de los recursos Humanos, materiales o consumibles y/o máquinas) directos para completar las actividades del proyecto}.*
-
-        Definir los siguientes costos:
-
-        4.2.1. Costos Generales
-
-                Los costos generales son todos los gastos realizados en accesorios y material de oficina y de uso diario, necesarios para los procesos, tales como, papeles, plumas, cartuchos de impresora, marcadores, computadora etc. Colocar tabla de costos.
-
-        4.2.2. Costos operativos durante el desarrollo 
-        
-                Evaluar costos necesarios para la operatividad de las actividades de la empresa durante el periodo en el que se realizara el proyecto. Los costos de operación pueden ser renta de oficina, agua, luz, teléfono, etc.
-
-        4.2.3. Costos del ambiente
-
-                Evaluar si se cuenta con los requerimientos técnicos para la implantación del software como el dominio, infraestructura de red, acceso a internet, etc.
-
-        4.2.4. Costos de personal
-
-                Aquí se incluyen los gastos generados por el recurso humano que se necesita para el desarrollo del sistema únicamente.
-
-                No se considerará personal para la operación y funcionamiento del sistema.
-
-                Incluir tabla que muestra los gastos correspondientes al personal.
-
-                Indicar organización y roles. Indicar horario de trabajo del personal.
-
-        4.2.5.  Costos totales del desarrollo del sistema
-
-                {Totalizar costos y realizar resumen de costo final del proyecto y la forma de pago.
-
-    4.3. <span id="_Toc52661352" class="anchor"></span>Factibilidad Operativa
-
-        Describir los beneficios del producto y si se tiene la capacidad por parte del cliente para mantener el sistema funcionando y garantizar el buen funcionamiento y su impacto en los usuarios. Lista de interesados.
-
-    4.4. <span id="_Toc52661353" class="anchor"></span>Factibilidad Legal
-
-        Determinar si existe conflicto del proyecto con restricciones legales como leyes y regulaciones del país o locales relacionadas con seguridad, protección de datos, conducta de negocio, empleo y adquisiciones.
-
-    4.5. <span id="_Toc52661354" class="anchor"></span>Factibilidad Social 
-
-        Evaluar influencias y asuntos de índole social y cultural como el clima político, códigos de conducta y ética*
-
-    4.6. <span id="_Toc52661355" class="anchor"></span>Factibilidad Ambiental
-
-        Evaluar influencias y asuntos de índole ambiental como el impacto y repercusión en el medio ambiente.
+    1.4.2 Objetivos Específicos [cite: 1]
+    * Implementar un módulo de procesamiento de lenguaje natural (NLP) para analizar estructura, coherencia y formato de documentos académicos (PDF/Word). [cite: 1]
+    * Permitir el registro y autenticación segura de usuarios (estudiantes y asesores). [cite: 1]
+    * Generar reportes automáticos detallados con sugerencias de mejora y correcciones ortotipográficas. [cite: 1]
 
 <div style="page-break-after: always; visibility: hidden">\pagebreak</div>
 
-5. <span id="_Toc52661356" class="anchor"></span>**Análisis Financiero**
+2. [cite_start]<span id="_Toc52661347" class="anchor"></span>**Riesgos** [cite: 1]
 
-    El plan financiero se ocupa del análisis de ingresos y gastos asociados a cada proyecto, desde el punto de vista del instante temporal en que se producen. Su misión fundamental es detectar situaciones financieramente inadecuadas.
-    Se tiene que estimar financieramente el resultado del proyecto.
+    [cite_start]Los riesgos identificados en el proyecto se pueden clasificar en tres categorías de acuerdo con su frecuencia y efectos potenciales: [cite: 1]
 
-    5.1. Justificación de la Inversión
+    | Frecuencia de Riesgo | Valores | [cite: 1]
+    | :--- | :--- |
+    | Bajo | 1 | [cite: 1]
+    | Medio | 2 | [cite: 1]
+    | Alto | 3 | [cite: 1]
 
-        5.1.1. Beneficios del Proyecto
-
-            El beneficio se calcula como el margen económico menos los costes de oportunidad, que son los márgenes que hubieran podido obtenerse de haber dedicado el capital y el esfuerzo a otras actividades.
-            El beneficio, obtenido lícitamente, no es sólo una recompensa a la inversión, al esfuerzo y al riesgo asumidos por el empresario, sino que también es un factor esencial para que las empresas sigan en el  mercado e incorporen nuevas inversiones al tejido industrial y social de las naciones.
-            Describir beneficios tangibles e intangibles*
-            Beneficios tangibles: son de fácil cuantificación, generalmente están relacionados con la reducción de recursos o talento humano.
-            Beneficios intangibles: no son fácilmente cuantificables y están relacionados con elementos o mejora en otros procesos de la organización.
->
-            Ejemplo de beneficios:
-
-            - Mejoras en la eficiencia del área bajo estudio.
-            - Reducción de personal.
-            - Reducción de futuras inversiones y costos.
-            - Disponibilidad del recurso humano.
-            - Mejoras en planeación, control y uso de recursos.
-            - Suministro oportuno de insumos para las operaciones.
-            - Cumplimiento de requerimientos gubernamentales.
-            - Toma acertada de decisiones.
-            - Disponibilidad de información apropiada.
-            - Aumento en la confiabilidad de la información.
-            - Mejor servicio al cliente externo e interno
-            - Logro de ventajas competitivas.
-            - Valor agregado a un producto de la compañía.
-        
-        5.1.2. Criterios de Inversión
-
-            5.1.2.1. Relación Beneficio/Costo (B/C)
-
-                En base a los costos y beneficios identificados se evalúa si es factible el desarrollo del proyecto. 
-                Si se presentan varias alternativas de solución se evaluará cada una de ellas para determinar la mejor solución desde el punto de vista del > retorno de la inversión
-                El B/C si es mayor a uno, se acepta el proyecto; si el B/C es igual a uno es indiferente aceptar o rechazar el proyecto y si el B/C es menor a uno se rechaza el proyecto
-
-            5.1.2.2. Valor Actual Neto (VAN)
-            
-                Valor actual de los beneficios netos que genera el proyecto. Si el VAN es mayor que cero, se acepta el proyecto; si el VAN es igual a cero es indiferente aceptar o rechazar el proyecto y si el VAN es menor que cero se rechaza el proyecto
-
-            5.1.2.3 Tasa Interna de Retorno (TIR)*
-                Es la tasa porcentual que indica la rentabilidad promedio anual que genera el capital invertido en el proyecto. Si la TIR es mayor que el costo de oportunidad se acepta el proyecto, si la TIR es igual al costo de oportunidad es indiferente aceptar o rechazar el proyecto, si la TIR es menor que el costo de oportunidad se rechaza el proyecto
-
-                Costo de oportunidad de capital (COK) es la tasa de interés que podría haber obtenido con el dinero invertido en el proyecto
+    | Riesgo | Valor | Efecto | [cite: 1]
+    | :--- | :--- | :--- |
+    | Privacidad de datos: Filtración de investigaciones inéditas al procesarlas a través de APIs de terceros | 3 | Catastrófico | [cite: 1]
+    | Alucinaciones de la IA: Que el agente sugiera bibliografía falsa o correcciones metodológicas incorrectas | 2 | Serio | [cite: 1]
+    | Costos de API: Incremento de costos operativos si los usuarios suben documentos demasiado pesados de forma constante | 1 | Moderado | [cite: 1]
+    | Rechazo institucional: Que las universidades o asesores consideren el uso de la IA como una falta a la ética académica | 2 | Serio | [cite: 1]
 
 <div style="page-break-after: always; visibility: hidden">\pagebreak</div>
 
-6. <span id="_Toc52661357" class="anchor"></span>**Conclusiones**
+3. [cite_start]<span id="_Toc52661348" class="anchor"></span>**Análisis de la Situación actual** [cite: 1]
 
-Explicar los resultados del análisis de factibilidad que nos indican si el proyecto es viable y factible.
+    3.1. [cite_start]Planteamiento del problema [cite: 1]
+
+    El modelo actual de asesoría de tesis es un cuello de botella en las universidades. [cite: 1] Los asesores humanos tienen múltiples alumnos y poco tiempo, lo que genera retrasos de semanas para una simple revisión de formato o redacción. [cite: 1] Esto causa frustración, prolonga el tiempo de titulación y disminuye la calidad de las investigaciones por la falta de iteraciones rápidas. [cite: 1]
+
+    3.2. Consideraciones de hardware y software [cite: 1]
+
+    **Hardware:** [cite: 1]
+    * **Computadora de desarrollo:** Procesador Intel Core i7 (o superior), 16 GB de RAM, SSD de 256 GB (mínimo) y monitor con resolución mínima de 1920x1080 píxeles. [cite: 1]
+    * **Servidor VPS para despliegue:** vCPU de 4 núcleos (mínimo), 8 GB de RAM (mínimo), 100 GB SSD y sistema operativo Linux (Debian 12.10 o similar). [cite: 1]
+
+    **Software:** [cite: 1]
+    * Sistema Operativo: Windows 10 PRO. [cite: 1]
+    * IDE: Visual Studio Code o similar. [cite: 1]
+    * Servidor Web: Apache HTTP Server. [cite: 1]
+    * Base de Datos: PostgreSQL. [cite: 1]
+    * Lenguaje de Programación: PHP (puro, sin framework). [cite: 1]
+    * Otras herramientas: JasperReports (opcional), Git y Consola SSH. [cite: 1]
+
+<div style="page-break-after: always; visibility: hidden">\pagebreak</div>
+
+4. [cite_start]<span id="_Toc52661349" class="anchor"></span>**Estudio de Factibilidad** [cite: 1]
+
+    [cite_start]El Estudio de Factibilidad del proyecto tiene como objetivo evaluar la viabilidad del proyecto desde varias perspectivas: técnica, económica, operativa y organizacional. [cite: 1]
+
+    4.1. <span id="_Toc52661350" class="anchor"></span>Factibilidad Técnica [cite: 1]
+
+    El estudio de factibilidad técnica evalúa si los recursos tecnológicos disponibles permiten el desarrollo e implementación del sistema de manera eficiente y segura. [cite: 1] El desarrollo se realizará localmente con equipos adecuados para tareas de codificación y pruebas. [cite: 1] Se utilizará PHP puro y PostgreSQL, tecnologías compatibles con entornos de producción web. [cite: 1] El despliegue final se contempla en una VPS con servidor Apache. [cite: 1] La seguridad incluirá validación de datos, cifrado de contraseñas y protección contra inyecciones SQL. [cite: 1] El uso de Git permitirá el control de versiones y la integridad del código. [cite: 1]
+
+    4.2. <span id="_Toc52661351" class="anchor"></span>Factibilidad Económica [cite: 1]
+
+    4.2.1. Costos Generales [cite: 1]
+    Incluye insumos como papel bond, tinta, lapiceros y accesorios, con un total estimado de S/. 195.00. [cite: 1]
+
+    4.2.2. Costos operativos durante el desarrollo [cite: 1]
+    Incluye servicios de luz (S/. 240.00) e Internet (S/. 210.00) por 3 meses, sumando S/. 450.00. [cite: 1]
+
+    4.2.3. Costos del ambiente [cite: 1]
+    Incluye dominio web (S/. 55.00), VPS por 3 meses (S/. 180.00) y certificado SSL (S/. 80.00), totalizando S/. 315.00. [cite: 1]
+
+    4.2.4. Costos de personal [cite: 1]
+    Contempla 4 roles (Backend, Frontend, UI/UX y Analista) con 220 horas estimadas cada uno a una tarifa de S/. 2.27 por hora, resultando en S/. 2,000.00 en total. [cite: 1]
+
+    4.2.5. Costos totales del desarrollo del sistema [cite: 1]
+    El costo total del proyecto asciende a S/. 2,960.00. [cite: 1]
+
+    4.3. <span id="_Toc52661352" class="anchor"></span>Factibilidad Operativa [cite: 1]
+
+    El sistema busca automatizar el acceso a la información y brindar seguimiento individualizado. [cite: 1] Se diseñará para ser intuitivo y accesible desde cualquier dispositivo con internet. [cite: 1] El personal será capacitado en el registro de información y generación de reportes para garantizar una correcta adopción. [cite: 1]
+
+    4.4. <span id="_Toc52661353" class="anchor"></span>Factibilidad Legal [cite: 1]
+
+    El proyecto debe cumplir con la Ley de Protección de Datos Personales. [cite: 1] Se establecerán políticas de privacidad y términos de uso, requiriendo el consentimiento explícito de los usuarios. [cite: 1] El uso de tecnologías de código abierto evita conflictos de licencias privativas. [cite: 1]
+
+    4.5. <span id="_Toc52661355" class="anchor"></span>Factibilidad Ambiental [cite: 1]
+
+    El proyecto reduce el uso de papel al digitalizar documentación. [cite: 1] Optimiza la energía mediante el uso de servidores eficientes y promueve la movilidad sostenible al permitir gestiones 100% en línea. [cite: 1]
+
+<div style="page-break-after: always; visibility: hidden">\pagebreak</div>
+
+5. [cite_start]<span id="_Toc52661356" class="anchor"></span>**Análisis Financiero** [cite: 1]
+
+    5.1. [cite_start]Justificación de la Inversión [cite: 1]
+    Se espera aumentar el número de usuarios al facilitar el acceso a la información y reducir la carga operativa mediante la digitalización. [cite: 1]
+
+    5.1.2. Criterios de Inversión [cite: 1]
+    Dada la naturaleza del proyecto, se realiza una evaluación cualitativa con una inversión estimada de S/. 855.00 (costos de ambiente y operativos), riesgo financiero bajo y beneficio estratégico alto. [cite: 1]
+
+<div style="page-break-after: always; visibility: hidden">\pagebreak</div>
+
+6. [cite_start]<span id="_Toc52661357" class="anchor"></span>**Conclusiones** [cite: 1]
+
+    * [cite_start]El proyecto es viable técnica, económica, operativa y legalmente. [cite: 1]
+    * [cite_start]Resuelve ineficiencias en procesos manuales y falta de transparencia. [cite: 1]
+    * [cite_start]Los riesgos son manejables con atención a la seguridad y control de costos. [cite: 1]
+    * [cite_start]Beneficia al medio ambiente al reducir papel y desplazamientos físicos. [cite: 1]
