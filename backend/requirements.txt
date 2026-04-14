@@ -1,2 +1,8 @@
 fastapi
 uvicorn[standard]
+python-multipart
+pydantic-settings
+httpx
+supabase
+google-generativeai
+pypdf

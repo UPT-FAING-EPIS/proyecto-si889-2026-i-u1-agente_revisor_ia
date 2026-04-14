@@ -1,16 +1,23 @@
 {
   "name": "frontend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "description": "Frontend Next.js para asesor de tesis con chat IA",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "keywords": [
+    "nextjs",
+    "rag",
+    "gemini",
+    "supabase"
+  ],
+  "license": "MIT",
   "dependencies": {
+    "ai": "^4.3.16",
     "next": "^16.2.3",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"

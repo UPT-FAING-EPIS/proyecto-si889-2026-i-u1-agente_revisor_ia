@@ -1,0 +1,105 @@
+# Comandos para levantar el proyecto
+
+Este documento te permite verificar y levantar backend (FastAPI) y frontend (Next.js).
+
+## 1) Verificar si ya estan corriendo
+
+Ejecuta estos comandos desde la raiz del repositorio:
+
+```bash
+curl -sS http://localhost:8000/health
+curl -I http://localhost:3000
+```
+
+Si el backend responde `{"status":"ok"}` y el frontend responde `HTTP/1.1 200`, ya estan arriba.
+
+## 2) Levantar Backend (FastAPI)
+
+Abre una terminal y ejecuta:
+
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Si aun no tienes archivo local de entorno en backend:
+
+```bash
+cp .env.example .env
+```
+
+Inicia el servidor:
+
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+## 3) Levantar Frontend (Next.js)
+
+Abre otra terminal y ejecuta:
+
+```bash
+cd frontend
+npm install
+```
+
+Si aun no tienes archivo local de entorno en frontend:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Inicia el servidor:
+
+```bash
+npm run dev
+```
+
+## 4) URLs de trabajo
+
+- Frontend: http://localhost:3000
+- Backend: http://localhost:8000
+- Swagger FastAPI: http://localhost:8000/docs
+
+## 5) Verificar flujo completo
+
+1. Registra o inicia sesion en el frontend.
+2. Sube un PDF desde el dashboard.
+3. Haz una pregunta en el chat.
+4. Verifica que el backend procese la consulta y responda streaming.
+
+## 6) Si un puerto esta ocupado
+
+### Ver procesos
+
+```bash
+lsof -iTCP:3000 -sTCP:LISTEN -P
+lsof -iTCP:8000 -sTCP:LISTEN -P
+```
+
+### Terminar proceso por PID
+
+```bash
+kill -9 <PID>
+```
+
+## 7) Reinicio rapido
+
+Cuando ya instalaste dependencias previamente:
+
+### Backend
+
+```bash
+cd backend
+source .venv/bin/activate
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm run dev
+```
