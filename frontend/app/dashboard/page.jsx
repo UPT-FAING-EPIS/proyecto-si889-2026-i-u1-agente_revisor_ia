@@ -62,7 +62,13 @@ function DashboardPage() {
       return;
     }
 
-    void refreshDocuments();
+    void refreshDocuments().catch((requestError) => {
+      if (requestError instanceof Error) {
+        setError(requestError.message);
+      } else {
+        setError("No se pudieron cargar tus documentos.");
+      }
+    });
   }, [isLoading, router, token, user]);
 
   useEffect(

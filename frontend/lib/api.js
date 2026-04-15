@@ -1,5 +1,7 @@
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/$/, "") || "http://localhost:8000";
+const configuredBackendUrl = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+const API_BASE_URL = configuredBackendUrl
+  ? configuredBackendUrl.replace(/\/$/, "")
+  : "/backend";
 
 class ApiError extends Error {
   constructor(message, status) {

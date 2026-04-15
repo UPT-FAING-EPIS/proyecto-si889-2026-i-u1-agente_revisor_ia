@@ -39,6 +39,10 @@ class Settings(BaseSettings):
         default="http://localhost:3000",
         validation_alias=AliasChoices("CORS_ORIGINS", "FRONTEND_ORIGINS"),
     )
+    cors_origin_regex: str = Field(
+        default=r"https://.*\\.app\\.github\\.dev",
+        validation_alias=AliasChoices("CORS_ORIGIN_REGEX"),
+    )
 
     @property
     def supabase_key(self) -> str:
