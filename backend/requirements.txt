@@ -4,5 +4,5 @@ python-multipart
 pydantic-settings
 httpx
 supabase
-google-generativeai
+google-genai
 pypdf

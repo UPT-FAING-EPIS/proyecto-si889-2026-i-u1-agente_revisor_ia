@@ -12,7 +12,7 @@ create table if not exists public.document_chunks (
   id bigserial primary key,
   document_id uuid not null references public.documents(id) on delete cascade,
   content text not null,
-  embedding vector(768) not null,
+  embedding vector(3072) not null,
   created_at timestamptz not null default now()
 );
 
@@ -26,7 +26,7 @@ create index if not exists idx_document_chunks_embedding
 
 create or replace function public.match_document_chunks(
   match_document_id uuid,
-  query_embedding vector(768),
+  query_embedding vector(3072),
   match_count integer default 5
 )
 returns table (

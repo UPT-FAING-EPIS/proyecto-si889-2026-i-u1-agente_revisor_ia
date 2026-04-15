@@ -36,19 +36,29 @@ function DashboardPage() {
     }
 
     const items = await listDocuments(token);
-    setDocuments(items || []);
+    const documentsList = items || [];
+    setDocuments(documentsList);
 
-    if (!selectedDocumentId && items?.length) {
-      setSelectedDocumentId(items[0].id);
-      setSelectedDocumentName(items[0].filename);
+    if (!documentsList.length) {
+      setSelectedDocumentId("");
+      setSelectedDocumentName("");
+      cleanupPreviewUrl();
+      setPdfPreviewUrl("");
+      return;
     }
 
-    if (selectedDocumentId && items?.length) {
-      const selected = items.find((item) => item.id === selectedDocumentId);
-      if (!selected) {
-        setSelectedDocumentId("");
-        setSelectedDocumentName("");
-      }
+    const selected =
+      documentsList.find((item) => item.id === selectedDocumentId) || documentsList[0];
+
+    setSelectedDocumentId(selected.id);
+    setSelectedDocumentName(selected.filename);
+
+    if (selected?.pdf_url) {
+      cleanupPreviewUrl();
+      setPdfPreviewUrl(selected.pdf_url);
+    } else {
+      cleanupPreviewUrl();
+      setPdfPreviewUrl("");
     }
   };
 
@@ -96,9 +106,13 @@ function DashboardPage() {
       setSelectedDocumentName(response.filename);
 
       cleanupPreviewUrl();
-      const localUrl = URL.createObjectURL(file);
-      previewUrlRef.current = localUrl;
-      setPdfPreviewUrl(localUrl);
+      if (response?.pdf_url) {
+        setPdfPreviewUrl(response.pdf_url);
+      } else {
+        const localUrl = URL.createObjectURL(file);
+        previewUrlRef.current = localUrl;
+        setPdfPreviewUrl(localUrl);
+      }
 
       setInfo(
         `Documento procesado: ${response.filename}. Fragmentos generados: ${response.chunk_count}.`
@@ -122,7 +136,7 @@ function DashboardPage() {
     setSelectedDocumentName(selected?.filename || "");
 
     cleanupPreviewUrl();
-    setPdfPreviewUrl("");
+    setPdfPreviewUrl(selected?.pdf_url || "");
   };
 
   if (isLoading || !user) {

@@ -51,6 +51,20 @@ async def upload_document(
         raise HTTPException(status_code=500, detail=str(error)) from error
 
     try:
+        supabase_repository.upload_document_pdf(
+            user_id=current_user.id,
+            document_id=document["id"],
+            filename=document["filename"],
+            file_bytes=file_bytes,
+        )
+    except SupabaseRepositoryError as error:
+        try:
+            supabase_repository.delete_document(document["id"])
+        except Exception:
+            pass
+        raise HTTPException(status_code=500, detail=str(error)) from error
+
+    try:
         embeddings = gemini_service.embed_documents(chunks)
         chunk_count = supabase_repository.insert_document_chunks(
             document_id=document["id"],
@@ -64,9 +78,16 @@ async def upload_document(
             pass
         raise HTTPException(status_code=500, detail=str(error)) from error
 
+    pdf_url = supabase_repository.get_document_pdf_url(
+        user_id=current_user.id,
+        document_id=document["id"],
+        filename=document["filename"],
+    )
+
     return UploadResponse(
         document_id=document["id"],
         filename=document["filename"],
+        pdf_url=pdf_url,
         chunk_count=chunk_count,
         extracted_characters=len(extracted_text),
     )

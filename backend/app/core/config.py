@@ -19,8 +19,12 @@ class Settings(BaseSettings):
         default="",
         validation_alias=AliasChoices("GEMINI_API_KEY", "API_GEMINI"),
     )
-    gemini_chat_model: str = Field(default="gemini-1.5-flash")
+    gemini_chat_model: str = Field(default="gemini-2.0-flash")
     gemini_embedding_model: str = Field(default="models/text-embedding-004")
+    gemini_embedding_output_dimensionality: int = Field(
+        default=3072,
+        validation_alias=AliasChoices("GEMINI_EMBEDDING_OUTPUT_DIMENSIONALITY"),
+    )
 
     supabase_url: str = Field(
         default="",
@@ -34,6 +38,14 @@ class Settings(BaseSettings):
         ),
     )
     supabase_service_role_key: str = Field(default="")
+    supabase_storage_bucket: str = Field(
+        default="thesis-documents",
+        validation_alias=AliasChoices("SUPABASE_STORAGE_BUCKET"),
+    )
+    supabase_storage_signed_url_expires_seconds: int = Field(
+        default=3600,
+        validation_alias=AliasChoices("SUPABASE_STORAGE_SIGNED_URL_EXPIRES_SECONDS"),
+    )
 
     cors_origins: str = Field(
         default="http://localhost:3000",

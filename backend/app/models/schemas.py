@@ -25,12 +25,14 @@ class AuthResponse(BaseModel):
 class DocumentSummary(BaseModel):
     id: str
     filename: str
+    pdf_url: str | None = None
     created_at: datetime | None = None
 
 
 class UploadResponse(BaseModel):
     document_id: str
     filename: str
+    pdf_url: str | None = None
     chunk_count: int
     extracted_characters: int
 

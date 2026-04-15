@@ -50,6 +50,7 @@ async def chat_with_document(
             document_id=payload.document_id,
             query_embedding=query_embedding,
             match_count=payload.match_count,
+            query_text=payload.message,
         )
     except (GeminiServiceError, SupabaseRepositoryError) as error:
         raise HTTPException(status_code=500, detail=str(error)) from error
