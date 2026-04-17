@@ -83,7 +83,7 @@ function ThesisReviewPanel({ token, documentId, documentName }) {
 
       {review ? (
         <article className="review-result">
-          <p>{review}</p>
+          <pre className="review-content">{review}</pre>
         </article>
       ) : null}
 

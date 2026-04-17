@@ -85,6 +85,13 @@ function listDocuments(token) {
   });
 }
 
+function deleteDocument(token, documentId) {
+  return apiRequest(`/api/documents/${encodeURIComponent(documentId)}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
 function uploadDocument(token, file) {
   const formData = new FormData();
   formData.append("file", file);
@@ -110,6 +117,7 @@ function evaluateThesis(token, documentId) {
 export {
   API_BASE_URL,
   ApiError,
+  deleteDocument,
   evaluateThesis,
   fetchCurrentUser,
   listDocuments,

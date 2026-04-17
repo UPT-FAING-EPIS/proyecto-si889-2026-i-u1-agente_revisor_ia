@@ -7,7 +7,7 @@ import ChatWindow from "../../components/ChatWindow";
 import PDFViewer from "../../components/PDFViewer";
 import ThesisReviewPanel from "../../components/ThesisReviewPanel";
 import UploadZone from "../../components/UploadZone";
-import { listDocuments, uploadDocument } from "../../lib/api";
+import { deleteDocument, listDocuments, uploadDocument } from "../../lib/api";
 import { useAuth } from "../../lib/providers/AuthProvider";
 
 function DashboardPage() {
@@ -19,6 +19,7 @@ function DashboardPage() {
   const [selectedDocumentName, setSelectedDocumentName] = useState("");
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [activeSection, setActiveSection] = useState("chat");
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
@@ -32,7 +33,7 @@ function DashboardPage() {
     }
   };
 
-  const refreshDocuments = async () => {
+  const refreshDocuments = async ({ resetSelection = false } = {}) => {
     if (!token) {
       return;
     }
@@ -40,6 +41,7 @@ function DashboardPage() {
     const items = await listDocuments(token);
     const documentsList = items || [];
     setDocuments(documentsList);
+    setError("");
 
     if (!documentsList.length) {
       setSelectedDocumentId("");
@@ -49,8 +51,23 @@ function DashboardPage() {
       return;
     }
 
-    const selected =
-      documentsList.find((item) => item.id === selectedDocumentId) || documentsList[0];
+    const activeDocumentId = resetSelection ? "" : selectedDocumentId;
+    if (!activeDocumentId) {
+      setSelectedDocumentId("");
+      setSelectedDocumentName("");
+      cleanupPreviewUrl();
+      setPdfPreviewUrl("");
+      return;
+    }
+
+    const selected = documentsList.find((item) => item.id === activeDocumentId);
+    if (!selected) {
+      setSelectedDocumentId("");
+      setSelectedDocumentName("");
+      cleanupPreviewUrl();
+      setPdfPreviewUrl("");
+      return;
+    }
 
     setSelectedDocumentId(selected.id);
     setSelectedDocumentName(selected.filename);
@@ -127,6 +144,44 @@ function DashboardPage() {
       }
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleDeleteDocument = async () => {
+    if (!token || !selectedDocumentId || isDeleting) {
+      return;
+    }
+
+    const selected = documents.find((item) => item.id === selectedDocumentId);
+    const selectedName = selected?.filename || "tesis seleccionada";
+    const shouldDelete = window.confirm(
+      `Se eliminara "${selectedName}" junto a sus chunks y el PDF en storage. ¿Deseas continuar?`
+    );
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setError("");
+    setInfo("");
+
+    try {
+      await deleteDocument(token, selectedDocumentId);
+      setSelectedDocumentId("");
+      setSelectedDocumentName("");
+      cleanupPreviewUrl();
+      setPdfPreviewUrl("");
+      await refreshDocuments({ resetSelection: true });
+      setInfo(`Tesis eliminada: ${selectedName}.`);
+    } catch (requestError) {
+      if (requestError instanceof Error) {
+        setError(requestError.message);
+      } else {
+        setError("No se pudo eliminar la tesis seleccionada.");
+      }
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -219,6 +274,27 @@ function DashboardPage() {
               </option>
             ))}
           </select>
+
+          <div className="document-actions">
+            <button
+              type="button"
+              className="button button-secondary"
+              onClick={() => {
+                void refreshDocuments({ resetSelection: !selectedDocumentId });
+              }}
+              disabled={!token || isUploading || isDeleting}
+            >
+              Actualizar lista
+            </button>
+            <button
+              type="button"
+              className="button button-danger"
+              onClick={handleDeleteDocument}
+              disabled={!selectedDocumentId || isUploading || isDeleting}
+            >
+              {isDeleting ? "Eliminando..." : "Eliminar tesis"}
+            </button>
+          </div>
 
           <PDFViewer pdfUrl={pdfPreviewUrl} filename={selectedDocumentName} />
 

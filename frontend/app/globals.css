@@ -299,6 +299,13 @@ select {
   width: 100%;
 }
 
+.document-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .pdf-viewer {
   margin-top: 14px;
   border: 1px solid var(--line);
@@ -392,13 +399,14 @@ select {
       transparent 26px
     );
   padding: 14px;
-  overflow: auto;
-  max-height: 560px;
+    overflow: visible;
+    max-height: none;
 }
 
-.review-result p {
+  .review-content {
   margin: 0;
   white-space: pre-wrap;
+    font: inherit;
 }
 
 .chat-header p {
@@ -506,6 +514,16 @@ select {
   background: #ffffff;
   border-color: var(--line);
   color: var(--text-strong);
+}
+
+.button-danger {
+  background: #fff3f1;
+  border-color: #f3b7b0;
+  color: #98261a;
+}
+
+.button-danger:hover:not(:disabled) {
+  background: #ffe4df;
 }
 
 .button-ghost {

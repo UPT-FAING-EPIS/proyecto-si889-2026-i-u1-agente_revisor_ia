@@ -20,6 +20,36 @@ async def list_documents(current_user: UserPublic = Depends(get_current_user)) -
     return [DocumentSummary(**item) for item in items]
 
 
+@router.delete("/documents/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_document(
+    document_id: str,
+    current_user: UserPublic = Depends(get_current_user),
+) -> None:
+    try:
+        document = supabase_repository.get_document_by_id(document_id)
+    except SupabaseRepositoryError as error:
+        raise HTTPException(status_code=500, detail=str(error)) from error
+
+    if not document or document.get("user_id") != current_user.id:
+        raise HTTPException(
+            status_code=404,
+            detail="Documento no encontrado para el usuario autenticado.",
+        )
+
+    storage_path = supabase_repository.resolve_document_pdf_storage_path(
+        user_id=current_user.id,
+        document_id=document["id"],
+        filename=document.get("filename") or "documento.pdf",
+        pdf_storage_path=document.get("pdf_storage_path"),
+    )
+
+    try:
+        supabase_repository.delete_document_pdf(storage_path)
+        supabase_repository.delete_document(document_id)
+    except SupabaseRepositoryError as error:
+        raise HTTPException(status_code=500, detail=str(error)) from error
+
+
 @router.post("/upload", response_model=UploadResponse, status_code=status.HTTP_201_CREATED)
 async def upload_document(
     file: UploadFile = File(...),
@@ -50,14 +80,34 @@ async def upload_document(
     except SupabaseRepositoryError as error:
         raise HTTPException(status_code=500, detail=str(error)) from error
 
+    storage_path = ""
     try:
-        supabase_repository.upload_document_pdf(
+        storage_path = supabase_repository.upload_document_pdf(
             user_id=current_user.id,
             document_id=document["id"],
             filename=document["filename"],
             file_bytes=file_bytes,
         )
     except SupabaseRepositoryError as error:
+        try:
+            supabase_repository.delete_document(document["id"])
+        except Exception:
+            pass
+        raise HTTPException(status_code=500, detail=str(error)) from error
+
+    try:
+        supabase_repository.update_document_pdf_metadata(
+            document_id=document["id"],
+            pdf_storage_path=storage_path,
+            pdf_size_bytes=len(file_bytes),
+            pdf_mime_type=(file.content_type or "application/pdf"),
+        )
+        document["pdf_storage_path"] = storage_path
+    except SupabaseRepositoryError as error:
+        try:
+            supabase_repository.delete_document_pdf(storage_path)
+        except Exception:
+            pass
         try:
             supabase_repository.delete_document(document["id"])
         except Exception:
@@ -73,16 +123,24 @@ async def upload_document(
         )
     except (GeminiServiceError, SupabaseRepositoryError) as error:
         try:
+            supabase_repository.delete_document_pdf(storage_path)
+        except Exception:
+            pass
+        try:
             supabase_repository.delete_document(document["id"])
         except Exception:
             pass
         raise HTTPException(status_code=500, detail=str(error)) from error
 
-    pdf_url = supabase_repository.get_document_pdf_url(
-        user_id=current_user.id,
-        document_id=document["id"],
-        filename=document["filename"],
-    )
+    try:
+        pdf_url = supabase_repository.get_document_pdf_url(
+            user_id=current_user.id,
+            document_id=document["id"],
+            filename=document["filename"],
+            pdf_storage_path=document.get("pdf_storage_path") or storage_path,
+        )
+    except SupabaseRepositoryError:
+        pdf_url = None
 
     return UploadResponse(
         document_id=document["id"],

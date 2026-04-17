@@ -25,6 +25,18 @@ class Settings(BaseSettings):
         default=3072,
         validation_alias=AliasChoices("GEMINI_EMBEDDING_OUTPUT_DIMENSIONALITY"),
     )
+    gemini_chat_max_output_tokens: int = Field(
+        default=3072,
+        validation_alias=AliasChoices("GEMINI_CHAT_MAX_OUTPUT_TOKENS"),
+    )
+    gemini_review_max_output_tokens: int = Field(
+        default=6144,
+        validation_alias=AliasChoices("GEMINI_REVIEW_MAX_OUTPUT_TOKENS"),
+    )
+    gemini_review_max_input_chars: int = Field(
+        default=260000,
+        validation_alias=AliasChoices("GEMINI_REVIEW_MAX_INPUT_CHARS"),
+    )
 
     supabase_url: str = Field(
         default="",

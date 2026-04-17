@@ -5,8 +5,20 @@ create table if not exists public.documents (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   filename text not null,
+  pdf_storage_path text,
+  pdf_size_bytes bigint,
+  pdf_mime_type text,
   created_at timestamptz not null default now()
 );
+
+alter table if exists public.documents
+  add column if not exists pdf_storage_path text;
+
+alter table if exists public.documents
+  add column if not exists pdf_size_bytes bigint;
+
+alter table if exists public.documents
+  add column if not exists pdf_mime_type text;
 
 create table if not exists public.document_chunks (
   id bigserial primary key,
@@ -115,4 +127,54 @@ create policy chunks_delete_owner
       where d.id = document_chunks.document_id
         and d.user_id = (select auth.uid())
     )
+  );
+
+-- Si cambias SUPABASE_STORAGE_BUCKET en .env, actualiza tambien el nombre en las
+-- politicas de storage de este bloque.
+insert into storage.buckets (id, name, public)
+values ('thesis-documents', 'thesis-documents', false)
+on conflict (id) do nothing;
+
+drop policy if exists thesis_documents_select_own on storage.objects;
+create policy thesis_documents_select_own
+  on storage.objects
+  for select
+  to authenticated
+  using (
+    bucket_id = 'thesis-documents'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+drop policy if exists thesis_documents_insert_own on storage.objects;
+create policy thesis_documents_insert_own
+  on storage.objects
+  for insert
+  to authenticated
+  with check (
+    bucket_id = 'thesis-documents'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+drop policy if exists thesis_documents_update_own on storage.objects;
+create policy thesis_documents_update_own
+  on storage.objects
+  for update
+  to authenticated
+  using (
+    bucket_id = 'thesis-documents'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  )
+  with check (
+    bucket_id = 'thesis-documents'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+drop policy if exists thesis_documents_delete_own on storage.objects;
+create policy thesis_documents_delete_own
+  on storage.objects
+  for delete
+  to authenticated
+  using (
+    bucket_id = 'thesis-documents'
+    and (storage.foldername(name))[1] = auth.uid()::text
   );

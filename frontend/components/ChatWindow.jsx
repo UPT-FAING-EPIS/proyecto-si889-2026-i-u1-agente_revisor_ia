@@ -102,7 +102,7 @@ function ChatWindow({ token, documentId, documentName }) {
           document_id: documentId,
           message: cleanQuestion,
           history: historyPayload,
-          match_count: 5,
+          match_count: 10,
         },
       });
     } catch (requestError) {
