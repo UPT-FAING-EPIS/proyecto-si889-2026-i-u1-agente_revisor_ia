@@ -359,6 +359,26 @@ class SupabaseRepository:
 
         return len(rows)
 
+    def list_document_chunks(self, document_id: str, limit: int = 3000) -> list[str]:
+        client = self._get_client()
+
+        response = (
+            client.table("document_chunks")
+            .select("content")
+            .eq("document_id", document_id)
+            .order("id")
+            .limit(limit)
+            .execute()
+        )
+
+        rows = response.data or []
+        return [
+            content
+            for row in rows
+            for content in [(row.get("content") or "").strip()]
+            if content
+        ]
+
     def match_document_chunks(
         self,
         document_id: str,

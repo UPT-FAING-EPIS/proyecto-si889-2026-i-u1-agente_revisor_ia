@@ -20,6 +20,16 @@ Reglas:
 5) Evita inventar datos.
 """.strip()
 
+THESIS_REVIEW_SYSTEM_PROMPT = """
+Eres un evaluador academico de tesis universitarias.
+Reglas:
+1) Responde en espanol formal, claro y accionable.
+2) Evalua estructura, problema, objetivos, metodologia, resultados, conclusiones y redaccion.
+3) Indica claramente fortalezas y debilidades con ejemplos concretos.
+4) Prioriza recomendaciones realistas y ordenadas por impacto.
+5) No inventes informacion que no aparezca en el documento.
+""".strip()
+
 DEFAULT_EMBEDDING_DIM = 3072
 DEFAULT_EMBEDDING_MODEL_FALLBACKS = (
     "text-embedding-004",
@@ -346,6 +356,178 @@ class GeminiService:
             return text
         return text[: max_chars - 3].rstrip() + "..."
 
+    @staticmethod
+    def _extract_text_from_generation_response(response: object) -> str:
+        if response is None:
+            return ""
+
+        direct_text = getattr(response, "text", None)
+        if isinstance(direct_text, str) and direct_text.strip():
+            return direct_text.strip()
+
+        if isinstance(response, dict):
+            text = response.get("text")
+            if isinstance(text, str) and text.strip():
+                return text.strip()
+
+        candidates = getattr(response, "candidates", None)
+        if candidates is None and isinstance(response, dict):
+            candidates = response.get("candidates")
+
+        if not isinstance(candidates, list):
+            return ""
+
+        parts_text: list[str] = []
+        for candidate in candidates:
+            content = getattr(candidate, "content", None)
+            if isinstance(candidate, dict):
+                content = candidate.get("content")
+
+            parts = getattr(content, "parts", None)
+            if isinstance(content, dict):
+                parts = content.get("parts")
+
+            if not isinstance(parts, list):
+                continue
+
+            for part in parts:
+                text = getattr(part, "text", None)
+                if isinstance(part, dict):
+                    text = part.get("text")
+                if isinstance(text, str) and text.strip():
+                    parts_text.append(text.strip())
+
+        return "\n".join(parts_text)
+
+    @staticmethod
+    def _prepare_document_for_review(
+        chunks: list[str],
+        max_chars: int = 420000,
+    ) -> tuple[str, int]:
+        formatted_chunks: list[str] = []
+        total_chars = 0
+        analyzed_chunks = 0
+
+        for index, chunk in enumerate(chunks, start=1):
+            content = (chunk or "").strip()
+            if not content:
+                continue
+
+            block = f"[Fragmento {index}]\n{content}\n\n"
+            if total_chars + len(block) > max_chars:
+                break
+
+            formatted_chunks.append(block)
+            total_chars += len(block)
+            analyzed_chunks += 1
+
+        if not formatted_chunks:
+            return "", 0
+
+        return "".join(formatted_chunks).strip(), analyzed_chunks
+
+    @staticmethod
+    def _build_thesis_review_prompt(
+        filename: str,
+        total_chunks: int,
+        analyzed_chunks: int,
+        document_text: str,
+    ) -> str:
+        return (
+            "Analiza integralmente la tesis y entrega retroalimentacion academica.\n"
+            f"Archivo: {filename}\n"
+            f"Fragmentos cargados para analisis: {analyzed_chunks} de {total_chunks}\n\n"
+            "Contenido de la tesis:\n"
+            f"{document_text}\n\n"
+            "Responde con esta estructura exacta:\n"
+            "1) Veredicto general (aprobable/no aprobable y por que)\n"
+            "2) Fortalezas principales (3-6 puntos)\n"
+            "3) Brechas o debilidades (3-8 puntos)\n"
+            "4) Que le falta para mejorar (checklist accionable y priorizada)\n"
+            "5) Recomendaciones concretas por capitulo o seccion"
+        )
+
+    @staticmethod
+    def _build_local_thesis_review(
+        thesis_text: str,
+        analyzed_chunks: int,
+        total_chunks: int,
+    ) -> str:
+        text = (thesis_text or "").lower()
+        word_count = len(TOKEN_PATTERN.findall(text))
+
+        expected_sections = [
+            ("resumen", "Resumen"),
+            ("introduccion", "Introduccion"),
+            ("planteamiento", "Planteamiento del problema"),
+            ("objetivos", "Objetivos"),
+            ("justificacion", "Justificacion"),
+            ("marco", "Marco teorico"),
+            ("metodologia", "Metodologia"),
+            ("resultados", "Resultados"),
+            ("conclusiones", "Conclusiones"),
+            ("referencias", "Referencias"),
+        ]
+
+        missing_sections = [
+            label
+            for token, label in expected_sections
+            if token not in text
+        ]
+
+        strengths: list[str] = []
+        if "objetiv" in text:
+            strengths.append("Se detecta presencia de objetivos de investigacion.")
+        if "metodolog" in text:
+            strengths.append("Se identifica una seccion metodologica explicitada.")
+        if "conclusion" in text:
+            strengths.append("El documento incluye cierre con conclusiones.")
+        if word_count >= 5000:
+            strengths.append("La extension del contenido sugiere desarrollo suficiente para una tesis.")
+
+        if not strengths:
+            strengths.append("Se requiere mayor estructuracion para identificar fortalezas claras.")
+
+        recommendations: list[str] = []
+        for section in missing_sections[:5]:
+            recommendations.append(f"Agregar o reforzar la seccion de {section}.")
+
+        if word_count < 3500:
+            recommendations.append(
+                "Incrementar profundidad teorica y metodologica; el contenido parece breve para una tesis completa."
+            )
+
+        if not recommendations:
+            recommendations.append(
+                "Refinar la redaccion academica y sustentar mejor cada afirmacion con evidencia y citas."
+            )
+
+        verdict = "Aprobable con observaciones"
+        if len(missing_sections) >= 5 or word_count < 2500:
+            verdict = "No aprobable en su estado actual"
+
+        missing_block = (
+            "\n".join(f"- {section}" for section in missing_sections[:8])
+            if missing_sections
+            else "- No se detectan vacios estructurales evidentes a nivel de secciones base."
+        )
+        strengths_block = "\n".join(f"- {item}" for item in strengths)
+        recommendations_block = "\n".join(f"- {item}" for item in recommendations)
+
+        return (
+            "Veredicto general:\n"
+            f"{verdict}.\n\n"
+            "Fortalezas principales:\n"
+            f"{strengths_block}\n\n"
+            "Brechas o debilidades:\n"
+            f"{missing_block}\n\n"
+            "Que le falta para mejorar:\n"
+            f"{recommendations_block}\n\n"
+            "Nota tecnica:\n"
+            "Esta revision se genero con un analisis local de respaldo porque Gemini no estuvo disponible. "
+            f"Fragmentos evaluados: {analyzed_chunks} de {total_chunks}."
+        )
+
     def _build_contextual_fallback_response(
         self,
         question: str,
@@ -376,6 +558,71 @@ class GeminiService:
             "2. Formula preguntas mas especificas (capitulo, variable, metodo).\n"
             "3. Verifica que tu API key de Gemini tenga cuota y acceso a modelos generativos."
         )
+
+    def review_thesis(self, filename: str, chunks: list[str]) -> tuple[str, int, int]:
+        if not chunks:
+            raise GeminiServiceError("No hay contenido para evaluar en la tesis.")
+
+        document_text, analyzed_chunks = self._prepare_document_for_review(chunks)
+        if not document_text or analyzed_chunks == 0:
+            raise GeminiServiceError("No se pudo preparar el texto de la tesis para evaluacion.")
+
+        analyzed_characters = len(document_text)
+        prompt = self._build_thesis_review_prompt(
+            filename=filename,
+            total_chunks=len(chunks),
+            analyzed_chunks=analyzed_chunks,
+            document_text=document_text,
+        )
+
+        try:
+            self._ensure_ready()
+        except GeminiServiceError as error:
+            LOGGER.warning(
+                "Gemini no disponible para revision de tesis, usando fallback local: %s",
+                error.message,
+            )
+            fallback = self._build_local_thesis_review(
+                thesis_text=document_text,
+                analyzed_chunks=analyzed_chunks,
+                total_chunks=len(chunks),
+            )
+            return fallback, analyzed_chunks, analyzed_characters
+
+        client = self._get_client()
+        model_errors: list[str] = []
+
+        for model_name in self._candidate_chat_models():
+            try:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        temperature=0.2,
+                        max_output_tokens=2200,
+                        system_instruction=THESIS_REVIEW_SYSTEM_PROMPT,
+                    ),
+                )
+            except Exception as error:  # pragma: no cover - llamada externa
+                model_errors.append(f"{model_name}: {error}")
+                continue
+
+            text = self._extract_text_from_generation_response(response)
+            if text:
+                return text, analyzed_chunks, analyzed_characters
+
+            model_errors.append(f"{model_name}: sin texto util")
+
+        LOGGER.warning(
+            "No se pudo generar revision de tesis con Gemini. Fallback local activado. %s",
+            "; ".join(model_errors[:3]) if model_errors else "sin detalles",
+        )
+        fallback = self._build_local_thesis_review(
+            thesis_text=document_text,
+            analyzed_chunks=analyzed_chunks,
+            total_chunks=len(chunks),
+        )
+        return fallback, analyzed_chunks, analyzed_characters
 
     def stream_chat_response(
         self,

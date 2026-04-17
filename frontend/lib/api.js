@@ -97,9 +97,20 @@ function uploadDocument(token, file) {
   });
 }
 
+function evaluateThesis(token, documentId) {
+  return apiRequest("/api/thesis/review", {
+    method: "POST",
+    token,
+    body: {
+      document_id: documentId,
+    },
+  });
+}
+
 export {
   API_BASE_URL,
   ApiError,
+  evaluateThesis,
   fetchCurrentUser,
   listDocuments,
   loginUser,

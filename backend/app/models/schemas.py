@@ -47,3 +47,16 @@ class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=4000)
     history: list[ChatMessage] = Field(default_factory=list)
     match_count: int = Field(default=5, ge=1, le=20)
+
+
+class ThesisReviewRequest(BaseModel):
+    document_id: str
+
+
+class ThesisReviewResponse(BaseModel):
+    document_id: str
+    filename: str
+    review: str
+    total_chunks: int
+    analyzed_chunks: int
+    analyzed_characters: int

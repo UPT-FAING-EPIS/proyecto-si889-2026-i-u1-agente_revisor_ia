@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import ChatWindow from "../../components/ChatWindow";
 import PDFViewer from "../../components/PDFViewer";
+import ThesisReviewPanel from "../../components/ThesisReviewPanel";
 import UploadZone from "../../components/UploadZone";
 import { listDocuments, uploadDocument } from "../../lib/api";
 import { useAuth } from "../../lib/providers/AuthProvider";
@@ -18,6 +19,7 @@ function DashboardPage() {
   const [selectedDocumentName, setSelectedDocumentName] = useState("");
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [activeSection, setActiveSection] = useState("chat");
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
 
@@ -139,6 +141,8 @@ function DashboardPage() {
     setPdfPreviewUrl(selected?.pdf_url || "");
   };
 
+  const isChatSection = activeSection === "chat";
+
   if (isLoading || !user) {
     return (
       <main className="center-screen">
@@ -169,11 +173,32 @@ function DashboardPage() {
         </div>
       </header>
 
+      <nav className="dashboard-tabs" aria-label="Apartados de trabajo">
+        <button
+          type="button"
+          className={`dashboard-tab ${isChatSection ? "is-active" : ""}`}
+          onClick={() => setActiveSection("chat")}
+        >
+          Preguntas sobre PDF
+        </button>
+        <button
+          type="button"
+          className={`dashboard-tab ${!isChatSection ? "is-active" : ""}`}
+          onClick={() => setActiveSection("review")}
+        >
+          Evaluacion de tesis
+        </button>
+      </nav>
+
       <section className="dashboard-grid">
         <article className="panel">
           <div className="panel-header">
             <h2>Documento</h2>
-            <p>Sube y visualiza tu tesis en paralelo al chat.</p>
+            <p>
+              {isChatSection
+                ? "Sube y visualiza tu tesis en paralelo al apartado de preguntas."
+                : "Sube una tesis y preparala para evaluacion integral con IA."}
+            </p>
           </div>
 
           <UploadZone onUpload={onUpload} isUploading={isUploading} />
@@ -202,11 +227,19 @@ function DashboardPage() {
         </article>
 
         <article className="panel">
-          <ChatWindow
-            token={token}
-            documentId={selectedDocumentId}
-            documentName={selectedDocumentName}
-          />
+          {isChatSection ? (
+            <ChatWindow
+              token={token}
+              documentId={selectedDocumentId}
+              documentName={selectedDocumentName}
+            />
+          ) : (
+            <ThesisReviewPanel
+              token={token}
+              documentId={selectedDocumentId}
+              documentName={selectedDocumentName}
+            />
+          )}
         </article>
       </section>
     </main>
