@@ -214,6 +214,13 @@ class SupabaseRepository:
             clean = f"{clean}.pdf"
         return clean
 
+    @staticmethod
+    def _normalize_chat_title(title: str | None, default_title: str = "Nuevo chat") -> str:
+        clean = " ".join((title or "").strip().split())
+        if not clean:
+            return default_title
+        return clean[:120]
+
     def _build_pdf_storage_path(self, user_id: str, document_id: str, filename: str) -> str:
         normalized_filename = self._normalize_filename(filename)
         return f"{user_id}/{document_id}/{normalized_filename}"
@@ -554,6 +561,197 @@ class SupabaseRepository:
         except SupabaseRepositoryError:
             item["pdf_url"] = None
         return item
+
+    def list_chat_sessions(
+        self,
+        user_id: str,
+        document_id: str | None = None,
+        mode: str | None = None,
+        limit: int = 100,
+    ) -> list[dict]:
+        client = self._get_client()
+
+        query = (
+            client.table("chat_sessions")
+            .select("id, document_id, mode, title, created_at, updated_at, last_message_at")
+            .eq("user_id", user_id)
+        )
+
+        if document_id:
+            query = query.eq("document_id", document_id)
+
+        if mode:
+            query = query.eq("mode", mode)
+
+        try:
+            response = (
+                query
+                .order("last_message_at", desc=True)
+                .order("created_at", desc=True)
+                .limit(limit)
+                .execute()
+            )
+        except Exception as error:
+            raise SupabaseRepositoryError(
+                "No se pudieron listar las sesiones de chat desde Supabase."
+            ) from error
+
+        return response.data or []
+
+    def create_chat_session(
+        self,
+        user_id: str,
+        document_id: str,
+        mode: str,
+        title: str | None = None,
+    ) -> dict:
+        default_title = "Nuevo chat PDF" if mode == "pdf_chat" else "Nueva revision"
+        safe_title = self._normalize_chat_title(title, default_title=default_title)
+
+        client = self._get_client()
+        try:
+            response = (
+                client.table("chat_sessions")
+                .insert(
+                    {
+                        "user_id": user_id,
+                        "document_id": document_id,
+                        "mode": mode,
+                        "title": safe_title,
+                    }
+                )
+                .execute()
+            )
+        except Exception as error:
+            raise SupabaseRepositoryError(
+                "No se pudo crear la sesion de chat en Supabase."
+            ) from error
+
+        if not response.data:
+            raise SupabaseRepositoryError(
+                "No se pudo crear la sesion de chat en Supabase."
+            )
+
+        return response.data[0]
+
+    def get_chat_session_by_id(self, chat_session_id: str) -> dict | None:
+        client = self._get_client()
+
+        try:
+            response = (
+                client.table("chat_sessions")
+                .select("id, user_id, document_id, mode, title, created_at, updated_at, last_message_at")
+                .eq("id", chat_session_id)
+                .limit(1)
+                .execute()
+            )
+        except Exception as error:
+            raise SupabaseRepositoryError(
+                "No se pudo recuperar la sesion de chat desde Supabase."
+            ) from error
+
+        if not response.data:
+            return None
+
+        return response.data[0]
+
+    def update_chat_session_title_from_user_message(
+        self,
+        chat_session_id: str,
+        user_message: str,
+    ) -> None:
+        candidate_title = self._normalize_chat_title(user_message, default_title="")
+        if not candidate_title:
+            return
+
+        client = self._get_client()
+
+        try:
+            current = (
+                client.table("chat_sessions")
+                .select("title")
+                .eq("id", chat_session_id)
+                .limit(1)
+                .execute()
+            )
+        except Exception:
+            return
+
+        if not current.data:
+            return
+
+        current_title = (current.data[0].get("title") or "").strip().lower()
+        generic_titles = {
+            "",
+            "nuevo chat",
+            "nuevo chat pdf",
+            "nueva revision",
+        }
+        if current_title not in generic_titles:
+            return
+
+        try:
+            client.table("chat_sessions").update({"title": candidate_title}).eq("id", chat_session_id).execute()
+        except Exception:
+            return
+
+    def list_chat_messages(self, chat_session_id: str, limit: int = 300) -> list[dict]:
+        client = self._get_client()
+
+        try:
+            response = (
+                client.table("chat_messages")
+                .select("id, chat_session_id, role, content, created_at")
+                .eq("chat_session_id", chat_session_id)
+                .order("id")
+                .limit(limit)
+                .execute()
+            )
+        except Exception as error:
+            raise SupabaseRepositoryError(
+                "No se pudieron recuperar los mensajes del chat desde Supabase."
+            ) from error
+
+        return response.data or []
+
+    def create_chat_message(
+        self,
+        chat_session_id: str,
+        role: str,
+        content: str,
+    ) -> dict:
+        clean_content = (content or "").strip()
+        if not clean_content:
+            raise SupabaseRepositoryError("No se puede guardar un mensaje vacio en el chat.")
+
+        client = self._get_client()
+
+        try:
+            response = (
+                client.table("chat_messages")
+                .insert(
+                    {
+                        "chat_session_id": chat_session_id,
+                        "role": role,
+                        "content": clean_content,
+                    }
+                )
+                .execute()
+            )
+        except Exception as error:
+            raise SupabaseRepositoryError(
+                "No se pudo guardar el mensaje del chat en Supabase."
+            ) from error
+
+        if not response.data:
+            raise SupabaseRepositoryError(
+                "No se pudo guardar el mensaje del chat en Supabase."
+            )
+
+        if role == "user":
+            self.update_chat_session_title_from_user_message(chat_session_id, clean_content)
+
+        return response.data[0]
 
     def insert_document_chunks(
         self,

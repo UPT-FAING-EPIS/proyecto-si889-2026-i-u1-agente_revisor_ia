@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 
 from app.core.auth import get_current_user
 from app.database.supabase_repository import SupabaseRepositoryError, supabase_repository
@@ -53,6 +53,7 @@ async def delete_document(
 @router.post("/upload", response_model=UploadResponse, status_code=status.HTTP_201_CREATED)
 async def upload_document(
     file: UploadFile = File(...),
+    replace_document_id: str | None = Form(default=None),
     current_user: UserPublic = Depends(get_current_user),
 ) -> UploadResponse:
     filename = file.filename or "documento.pdf"
@@ -74,6 +75,20 @@ async def upload_document(
             status_code=400,
             detail="No se pudieron generar fragmentos utiles del PDF.",
         )
+
+    replace_target_id = (replace_document_id or "").strip()
+    document_to_replace: dict | None = None
+    if replace_target_id:
+        try:
+            document_to_replace = supabase_repository.get_document_by_id(replace_target_id)
+        except SupabaseRepositoryError as error:
+            raise HTTPException(status_code=500, detail=str(error)) from error
+
+        if not document_to_replace or document_to_replace.get("user_id") != current_user.id:
+            raise HTTPException(
+                status_code=404,
+                detail="El documento que intentas reemplazar no existe para este usuario.",
+            )
 
     try:
         document = supabase_repository.create_document(current_user.id, filename)
@@ -132,6 +147,26 @@ async def upload_document(
             pass
         raise HTTPException(status_code=500, detail=str(error)) from error
 
+    replaced_document_id: str | None = None
+    replace_warning: str | None = None
+    if document_to_replace and document_to_replace.get("id") != document["id"]:
+        replace_storage_path = supabase_repository.resolve_document_pdf_storage_path(
+            user_id=current_user.id,
+            document_id=document_to_replace["id"],
+            filename=document_to_replace.get("filename") or "documento.pdf",
+            pdf_storage_path=document_to_replace.get("pdf_storage_path"),
+        )
+
+        try:
+            supabase_repository.delete_document_pdf(replace_storage_path)
+            supabase_repository.delete_document(document_to_replace["id"])
+            replaced_document_id = document_to_replace["id"]
+        except SupabaseRepositoryError as error:
+            replace_warning = (
+                "El nuevo PDF se subio correctamente, pero no se pudo eliminar el PDF anterior. "
+                f"Detalle: {error}"
+            )
+
     try:
         pdf_url = supabase_repository.get_document_pdf_url(
             user_id=current_user.id,
@@ -148,4 +183,6 @@ async def upload_document(
         pdf_url=pdf_url,
         chunk_count=chunk_count,
         extracted_characters=len(extracted_text),
+        replaced_document_id=replaced_document_id,
+        replace_warning=replace_warning,
     )

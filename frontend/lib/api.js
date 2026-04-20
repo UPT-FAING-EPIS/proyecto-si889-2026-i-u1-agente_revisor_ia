@@ -85,6 +85,43 @@ function listDocuments(token) {
   });
 }
 
+function listChatSessions(token, { documentId, mode } = {}) {
+  const query = new URLSearchParams();
+  if (documentId) {
+    query.set("document_id", documentId);
+  }
+  if (mode) {
+    query.set("mode", mode);
+  }
+
+  const queryString = query.toString();
+  const path = queryString ? `/api/chats?${queryString}` : "/api/chats";
+
+  return apiRequest(path, {
+    method: "GET",
+    token,
+  });
+}
+
+function createChatSession(token, { documentId, mode, title }) {
+  return apiRequest("/api/chats", {
+    method: "POST",
+    token,
+    body: {
+      document_id: documentId,
+      mode,
+      title,
+    },
+  });
+}
+
+function listChatMessages(token, chatId) {
+  return apiRequest(`/api/chats/${encodeURIComponent(chatId)}/messages`, {
+    method: "GET",
+    token,
+  });
+}
+
 function deleteDocument(token, documentId) {
   return apiRequest(`/api/documents/${encodeURIComponent(documentId)}`, {
     method: "DELETE",
@@ -92,9 +129,12 @@ function deleteDocument(token, documentId) {
   });
 }
 
-function uploadDocument(token, file) {
+function uploadDocument(token, file, replaceDocumentId = "") {
   const formData = new FormData();
   formData.append("file", file);
+  if (replaceDocumentId) {
+    formData.append("replace_document_id", replaceDocumentId);
+  }
 
   return apiRequest("/api/upload", {
     method: "POST",
@@ -104,12 +144,14 @@ function uploadDocument(token, file) {
   });
 }
 
-function evaluateThesis(token, documentId) {
+function evaluateThesis(token, documentId, chatId, message) {
   return apiRequest("/api/thesis/review", {
     method: "POST",
     token,
     body: {
       document_id: documentId,
+      chat_id: chatId,
+      message,
     },
   });
 }
@@ -117,9 +159,12 @@ function evaluateThesis(token, documentId) {
 export {
   API_BASE_URL,
   ApiError,
+  createChatSession,
   deleteDocument,
   evaluateThesis,
   fetchCurrentUser,
+  listChatMessages,
+  listChatSessions,
   listDocuments,
   loginUser,
   registerUser,

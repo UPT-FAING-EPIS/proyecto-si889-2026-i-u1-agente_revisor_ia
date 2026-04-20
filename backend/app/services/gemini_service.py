@@ -509,7 +509,10 @@ class GeminiService:
         lines: list[str] = []
         for message in history[-10:]:
             role = message.get("role", "user")
-            content = message.get("content", "")
+            content = GeminiService._truncate_text(
+                str(message.get("content", "")),
+                max_chars=900,
+            )
             if not content:
                 continue
             lines.append(f"{role.upper()}: {content}")
@@ -640,11 +643,22 @@ class GeminiService:
         total_chunks: int,
         analyzed_chunks: int,
         document_text: str,
+        history: list[dict],
+        user_request: str,
     ) -> str:
+        history_block = GeminiService._format_history(history)
+        request_block = (user_request or "").strip() or (
+            "Evalua integralmente esta tesis y prioriza las mejoras de mayor impacto."
+        )
+
         return (
             "Analiza integralmente la tesis y entrega retroalimentacion academica.\n"
             f"Archivo: {filename}\n"
             f"Fragmentos cargados para analisis: {analyzed_chunks} de {total_chunks}\n\n"
+            "Solicitud actual del estudiante:\n"
+            f"{request_block}\n\n"
+            "Historial del chat de revision:\n"
+            f"{history_block}\n\n"
             "Contenido de la tesis:\n"
             f"{document_text}\n\n"
             "Instrucciones de formato estrictas:\n"
@@ -821,7 +835,13 @@ class GeminiService:
             "4. Verifica que tu API key de Gemini tenga cuota y acceso a modelos generativos."
         )
 
-    def review_thesis(self, filename: str, chunks: list[str]) -> tuple[str, int, int]:
+    def review_thesis(
+        self,
+        filename: str,
+        chunks: list[str],
+        history: list[dict] | None = None,
+        user_request: str = "",
+    ) -> tuple[str, int, int]:
         if not chunks:
             raise GeminiServiceError("No hay contenido para evaluar en la tesis.")
 
@@ -838,6 +858,8 @@ class GeminiService:
             total_chunks=len(chunks),
             analyzed_chunks=analyzed_chunks,
             document_text=document_text,
+            history=history or [],
+            user_request=user_request,
         )
 
         if self._should_skip_remote_generation():

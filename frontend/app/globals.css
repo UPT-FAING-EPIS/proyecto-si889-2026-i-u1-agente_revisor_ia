@@ -414,6 +414,22 @@ select {
   color: var(--text-muted);
 }
 
+.chat-session-controls {
+  display: grid;
+  gap: 8px;
+}
+
+.chat-session-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-session-row .field-select {
+  margin-top: 0;
+  flex: 1;
+}
+
 .chat-messages {
   border: 1px solid var(--line);
   border-radius: 14px;
@@ -470,10 +486,18 @@ select {
   gap: 10px;
 }
 
+.review-chat-form {
+  margin-top: -4px;
+}
+
 .chat-form textarea {
   width: 100%;
   resize: vertical;
   min-height: 92px;
+}
+
+.review-chat-messages {
+  max-height: 520px;
 }
 
 .chat-actions {
@@ -638,5 +662,13 @@ select {
 
   .chat-actions .button {
     flex: 1;
+  }
+
+  .chat-session-row {
+    flex-wrap: wrap;
+  }
+
+  .chat-session-row .button {
+    width: 100%;
   }
 }

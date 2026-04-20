@@ -118,7 +118,9 @@ function DashboardPage() {
     setInfo("");
 
     try {
-      const response = await uploadDocument(token, file);
+      const replaceDocumentId = activeSection === "review" ? selectedDocumentId : "";
+      const replacingDocument = documents.find((item) => item.id === replaceDocumentId);
+      const response = await uploadDocument(token, file, replaceDocumentId);
       await refreshDocuments();
 
       setSelectedDocumentId(response.document_id);
@@ -133,8 +135,15 @@ function DashboardPage() {
         setPdfPreviewUrl(localUrl);
       }
 
+      const replacedLabel = response?.replaced_document_id
+        ? ` Se reemplazo la tesis anterior (${replacingDocument?.filename || response.replaced_document_id}).`
+        : "";
+      const replaceWarning = response?.replace_warning
+        ? ` Advertencia: ${response.replace_warning}`
+        : "";
+
       setInfo(
-        `Documento procesado: ${response.filename}. Fragmentos generados: ${response.chunk_count}.`
+        `Documento procesado: ${response.filename}. Fragmentos generados: ${response.chunk_count}.${replacedLabel}${replaceWarning}`
       );
     } catch (requestError) {
       if (requestError instanceof Error) {

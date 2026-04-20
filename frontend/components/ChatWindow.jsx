@@ -3,7 +3,12 @@
 import { useCompletion } from "ai/react";
 import { useEffect, useRef, useState } from "react";
 
-import { API_BASE_URL } from "../lib/api";
+import {
+  API_BASE_URL,
+  createChatSession,
+  listChatMessages,
+  listChatSessions,
+} from "../lib/api";
 
 function createMessage(role, content) {
   return {
@@ -14,10 +19,15 @@ function createMessage(role, content) {
 }
 
 function ChatWindow({ token, documentId, documentName }) {
+  const [chatSessions, setChatSessions] = useState([]);
+  const [activeChatId, setActiveChatId] = useState("");
   const [messages, setMessages] = useState([]);
   const [question, setQuestion] = useState("");
   const [activeAssistantId, setActiveAssistantId] = useState("");
   const [localError, setLocalError] = useState("");
+  const [isInitializingChats, setIsInitializingChats] = useState(false);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+  const [isCreatingChat, setIsCreatingChat] = useState(false);
 
   const bottomRef = useRef(null);
 
@@ -51,11 +61,149 @@ function ChatWindow({ token, documentId, documentName }) {
   }, [messages, isLoading]);
 
   useEffect(() => {
+    setChatSessions([]);
+    setActiveChatId("");
     setMessages([]);
     setQuestion("");
     setLocalError("");
     setActiveAssistantId("");
   }, [documentId]);
+
+  const loadMessagesByChatId = async (chatId) => {
+    if (!token || !chatId) {
+      setMessages([]);
+      return;
+    }
+
+    setIsLoadingMessages(true);
+    setLocalError("");
+
+    try {
+      const rows = await listChatMessages(token, chatId);
+      const normalized = (rows || []).map((row) => ({
+        id: String(row.id),
+        role: row.role,
+        content: row.content,
+      }));
+      setMessages(normalized);
+    } catch (requestError) {
+      if (requestError instanceof Error) {
+        setLocalError(requestError.message);
+      } else {
+        setLocalError("No se pudo cargar el historial del chat.");
+      }
+      setMessages([]);
+    } finally {
+      setIsLoadingMessages(false);
+    }
+  };
+
+  const syncSessions = async (preferredChatId = "") => {
+    if (!token || !documentId) {
+      setChatSessions([]);
+      setActiveChatId("");
+      setMessages([]);
+      return "";
+    }
+
+    const sessions = (await listChatSessions(token, {
+      documentId,
+      mode: "pdf_chat",
+    })) || [];
+    setChatSessions(sessions);
+
+    const hasPreferred = preferredChatId && sessions.some((session) => session.id === preferredChatId);
+    const nextChatId = hasPreferred ? preferredChatId : sessions[0]?.id || "";
+    setActiveChatId(nextChatId);
+    return nextChatId;
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const bootstrapSessions = async () => {
+      if (!token || !documentId) {
+        return;
+      }
+
+      setIsInitializingChats(true);
+      setLocalError("");
+
+      try {
+        let nextChatId = await syncSessions();
+        if (!nextChatId) {
+          const created = await createChatSession(token, {
+            documentId,
+            mode: "pdf_chat",
+          });
+          if (cancelled) {
+            return;
+          }
+          setChatSessions([created]);
+          nextChatId = created.id;
+          setActiveChatId(nextChatId);
+        }
+
+        if (!cancelled && nextChatId) {
+          await loadMessagesByChatId(nextChatId);
+        }
+      } catch (requestError) {
+        if (cancelled) {
+          return;
+        }
+
+        if (requestError instanceof Error) {
+          setLocalError(requestError.message);
+        } else {
+          setLocalError("No se pudieron inicializar los chats del documento.");
+        }
+      } finally {
+        if (!cancelled) {
+          setIsInitializingChats(false);
+        }
+      }
+    };
+
+    void bootstrapSessions();
+    return () => {
+      cancelled = true;
+    };
+  }, [documentId, token]);
+
+  const handleCreateChat = async () => {
+    if (!token || !documentId || isCreatingChat) {
+      return;
+    }
+
+    setIsCreatingChat(true);
+    setLocalError("");
+
+    try {
+      const created = await createChatSession(token, {
+        documentId,
+        mode: "pdf_chat",
+      });
+      setChatSessions((previous) => [created, ...previous]);
+      setActiveChatId(created.id);
+      await loadMessagesByChatId(created.id);
+      setQuestion("");
+    } catch (requestError) {
+      if (requestError instanceof Error) {
+        setLocalError(requestError.message);
+      } else {
+        setLocalError("No se pudo crear un nuevo chat para este documento.");
+      }
+    } finally {
+      setIsCreatingChat(false);
+    }
+  };
+
+  const handleSelectChat = async (event) => {
+    const nextChatId = event.target.value;
+    setActiveChatId(nextChatId);
+    setLocalError("");
+    await loadMessagesByChatId(nextChatId);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -70,12 +218,13 @@ function ChatWindow({ token, documentId, documentName }) {
       return;
     }
 
+    if (!activeChatId) {
+      setLocalError("Crea o selecciona un chat para continuar.");
+      return;
+    }
+
     const userMessage = createMessage("user", cleanQuestion);
     const assistantId = crypto.randomUUID();
-    const historyPayload = [...messages, userMessage].map(({ role, content }) => ({
-      role,
-      content,
-    }));
 
     setCompletion("");
 
@@ -93,18 +242,20 @@ function ChatWindow({ token, documentId, documentName }) {
     setLocalError("");
     setActiveAssistantId(assistantId);
 
+    let completionSucceeded = false;
+
     try {
       await complete(cleanQuestion, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         body: {
-          document_id: documentId,
+          chat_id: activeChatId,
           message: cleanQuestion,
-          history: historyPayload,
           match_count: 10,
         },
       });
+      completionSucceeded = true;
     } catch (requestError) {
       const fallbackMessage =
         requestError instanceof Error
@@ -121,9 +272,20 @@ function ChatWindow({ token, documentId, documentName }) {
             : message
         )
       );
-    } finally {
-      setActiveAssistantId("");
     }
+
+    if (completionSucceeded) {
+      try {
+        const refreshedChatId = await syncSessions(activeChatId);
+        if (refreshedChatId && refreshedChatId !== activeChatId) {
+          await loadMessagesByChatId(refreshedChatId);
+        }
+      } catch {
+        // Si falla la sincronizacion de sesiones no se invalida la respuesta ya obtenida.
+      }
+    }
+
+    setActiveAssistantId("");
   };
 
   return (
@@ -137,8 +299,44 @@ function ChatWindow({ token, documentId, documentName }) {
         </p>
       </div>
 
+      <div className="chat-session-controls">
+        <label className="field-label" htmlFor="chat-session-select">
+          Chats de este documento
+        </label>
+        <div className="chat-session-row">
+          <select
+            id="chat-session-select"
+            className="field-select"
+            value={activeChatId}
+            onChange={handleSelectChat}
+            disabled={!documentId || isInitializingChats || isCreatingChat || isLoading}
+          >
+            <option value="">
+              {documentId ? "Selecciona un chat" : "Primero selecciona una tesis"}
+            </option>
+            {chatSessions.map((session) => (
+              <option key={session.id} value={session.id}>
+                {session.title}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            className="button button-secondary"
+            onClick={handleCreateChat}
+            disabled={!documentId || isInitializingChats || isCreatingChat || isLoading}
+          >
+            {isCreatingChat ? "Creando..." : "Nuevo chat"}
+          </button>
+        </div>
+      </div>
+
       <div className="chat-messages">
-        {messages.length === 0 ? (
+        {isLoadingMessages ? (
+          <p className="chat-placeholder">Cargando historial del chat...</p>
+        ) : null}
+
+        {!isLoadingMessages && messages.length === 0 ? (
           <p className="chat-placeholder">
             Escribe una pregunta como: "Evalua si mi marco metodologico es consistente".
           </p>
@@ -168,14 +366,21 @@ function ChatWindow({ token, documentId, documentName }) {
           onChange={(event) => setQuestion(event.target.value)}
           placeholder="Pregunta sobre tu tesis..."
           rows={3}
-          disabled={!documentId || isLoading}
+          disabled={!documentId || !activeChatId || isLoading || isLoadingMessages}
         />
 
         <div className="chat-actions">
           <button
             type="submit"
             className="button button-primary"
-            disabled={!token || !documentId || !question.trim() || isLoading}
+            disabled={
+              !token
+              || !documentId
+              || !activeChatId
+              || !question.trim()
+              || isLoading
+              || isLoadingMessages
+            }
           >
             {isLoading ? "Generando respuesta..." : "Enviar"}
           </button>
