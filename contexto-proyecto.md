@@ -1,3 +1,76 @@
+# Contexto del proyecto — Agente de IA para Revisión y Asesoría de Tesis
+
+## Resumen ejecutivo
+Este documento resume el contexto técnico y arquitectónico del proyecto "Agente de IA para Revisión y Asesoría de Tesis". Su objetivo es servir como guía rápida para desarrolladores, evaluadores y colaboradores, detallando los componentes principales, el flujo de datos y los archivos más relevantes del repositorio.
+
+## Objetivo del documento
+Definir de forma concisa el alcance, la arquitectura y las dependencias del proyecto para facilitar la incorporación de nuevos desarrolladores y la planificación de un MVP coherente.
+
+## Alcance (MVP)
+- Carga y procesamiento de documentos PDF.
+- Generación de embeddings y almacenamiento en Supabase (pgvector).
+- Búsqueda RAG (retrieval + generation) y chat básico con streaming de respuesta.
+- Autenticación básica y control de acceso por usuario.
+
+## Arquitectura técnica (vista general)
+El sistema está organizado en cuatro capas principales:
+
+- Frontend (Next.js): interfaz web reactiva que muestra el visor de PDF, zona de subida y la ventana de chat con streaming.
+- Backend (FastAPI + Uvicorn): API REST que gestiona uploads, extracción de texto, vectorización, consultas RAG y orquestación de llamadas a los modelos de IA.
+- Base de datos (Supabase): PostgreSQL + pgvector para almacenamiento relacional y vectorial.
+- IA (Gemini 1.5): creación de embeddings y generación de respuestas; puede usarse gemini-1.5-pro/flash según disponibilidad.
+
+### Frontend
+- Tecnologías: Next.js, Vercel AI SDK (opcional para streaming), React.
+- Carpetas clave: `frontend/app/`, `frontend/components/`, `frontend/lib/`.
+
+### Backend
+- Tecnologías: Python, FastAPI, Uvicorn.
+- Módulos clave: `backend/app/main.py`, `backend/app/routers/`, `backend/app/services/`.
+- Servicios importantes: `gemini_service.py`, `pdf_service.py`, `supabase_repository.py`, `supabase_auth_service.py`.
+
+### Base de datos
+- Plataforma: Supabase (Postgres + pgvector).
+- Tablas principales: `users`, `documents`, `document_chunks` (contenido y embedding).
+
+### IA
+- Embeddings: modelo de embeddings (configurable desde `gemini_service`).
+- Generación: modelo de texto para respuestas y resúmenes (Gemini 1.5).
+
+## Flujo de datos (resumido)
+1. El usuario sube un PDF desde el frontend.
+2. El backend extrae texto (pdf_service) y lo segmenta en fragmentos.
+3. Cada fragmento se transforma en embedding y se guarda en Supabase.
+4. Cuando el usuario pregunta, la pregunta se transforma en embedding, se recuperan los fragmentos más relevantes y se envían al modelo de generación junto con la instrucción del sistema.
+5. El modelo devuelve la respuesta y el backend la transmite al frontend (streaming cuando es posible).
+
+## Dependencias y variables de entorno (principales)
+- Node >= 18, Python >= 3.11.
+- Variables de ejemplo: `SUPABASE_URL`, `SUPABASE_KEY`, `BACKEND_INTERNAL_URL`, `NEXT_PUBLIC_BACKEND_URL`, `GOOGLE_API_KEY` (o la variable que use tu integración con Gemini).
+
+## Desarrollo local (resumen)
+- Backend: `cd backend` → crear venv → `pip install -r requirements.txt` → `uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`.
+- Frontend: `cd frontend` → `npm install` → `npm run dev`.
+- Referencia detallada: [docs/COMANDOS-LEVANTAR.md](docs/COMANDOS-LEVANTAR.md).
+
+## Archivos y rutas clave
+- Backend: `backend/app/main.py`, `backend/app/routers/`, `backend/app/services/gemini_service.py`, `backend/app/services/pdf_service.py`.
+- Frontend: `frontend/app/`, `frontend/components/ChatWindow.jsx`, `frontend/components/PDFViewer.jsx`.
+- Scripts: `backend/scripts/probe_gemini_models.py`.
+
+## Buenas prácticas y siguientes pasos recomendados
+- Añadir pruebas unitarias para `pdf_service` y `gemini_service`.
+- Manejar secretos mediante un gestor seguro (no en el repo).
+- Implementar logging y métricas para llamadas a modelos (latencia, errores, tokens).
+- Ejecutar un piloto con usuarios reales y recopilar feedback para ajustar prompts y chunking.
+
+---
+Documento actualizado para apoyar el desarrollo del MVP y la colaboración entre frontend, backend y equipos de IA.
+
+---
+
+## Contenido técnico original (recuperado)
+
 1. Frontend: Next.js (La Cara del Proyecto)
 El frontend será el único punto de contacto con el estudiante. Su trabajo es ser rápido, interactivo y mostrar la información de forma limpia.
 
@@ -105,3 +178,6 @@ La Búsqueda: Next.js envía la pregunta a FastAPI. FastAPI convierte esa pregun
 El Razonamiento: FastAPI toma esos 5 párrafos específicos (que casualmente son del capítulo de metodología) y se los manda a Gemini 1.5 junto con la pregunta.
 
 La Respuesta: Gemini 1.5 analiza los párrafos, redacta una crítica constructiva y la envía de vuelta a FastAPI, quien se la pasa a Next.js para que el alumno la lea en pantalla.
+
+---
+Documento actualizado para apoyar el desarrollo del MVP y la colaboración entre frontend, backend y equipos de IA.
