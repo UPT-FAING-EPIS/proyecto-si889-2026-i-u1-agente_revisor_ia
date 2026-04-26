@@ -1,4 +1,34 @@
-# FD04-EPIS - Informe Arquitectura de Software
+![Logo UPT](./media/logo-upt.png)
+
+# UNIVERSIDAD PRIVADA DE TACNA
+## FACULTAD DE INGENIERÍA
+### Escuela Profesional de Ingeniería de Sistemas
+
+**Proyecto:** "Agente de IA para Revisión y Asesoría de Tesis"
+
+**Curso:** Patrones de Software  
+**Docente:** Ing. Patrick Cuadros Quiroga
+
+**Integrantes:**
+- **Ayala Ramos, Carlos Daniel (2022074266)**
+- **Loyola Vilca, Renzo Fernando (2021072615)**
+- **Vargas Candia, Hashira Belén (2022075480)**
+
+**Tacna – Perú**  
+**2026**
+
+---
+
+# Sistema Agente de IA para Revisión y Asesoría de Tesis
+## Informe de Arquitectura de Software
+**Versión 1.0**
+
+### Control de versiones
+| Versión | Hecha por | Revisada por | Aprobada por | Fecha | Motivo |
+| --- | --- | --- | --- | --- | --- |
+| 1.0 | - | - | - | 26/04/2026 | Versión inicial FD04 |
+
+---
 
 Proyecto: Agente Revisor IA para revisión de tesis
 Curso: SI889 - Arquitectura de Software
