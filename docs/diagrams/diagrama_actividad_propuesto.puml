@@ -1,0 +1,12 @@
+@startuml
+start
+:Estudiante inicia sesión;
+:Sube PDF al sistema;
+:Sistema extrae texto y guarda versión;
+:Sistema solicita revisión automática (IA);
+:IA genera informe preliminar;
+:Sistema notifica al revisor;
+:Revisor revisa, edita y marca ítems resueltos;
+:Genera informe final y versiona documento;
+stop
+@enduml

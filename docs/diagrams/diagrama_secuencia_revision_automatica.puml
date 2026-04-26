@@ -1,0 +1,20 @@
+@startuml
+title Secuencia: Revisión automática (flujo simplificado)
+participant Estudiante
+participant Frontend
+participant API
+participant PDFService as "pdf_service"
+participant Gemini as "gemini_service"
+participant DB as "supabase_repository"
+
+Estudiante -> Frontend: Subir documento (PDF)
+Frontend -> API: POST /documents
+API -> PDFService: extraer_texto(file)
+PDFService --> API: texto_extraido
+API -> DB: guardar_documento(metadata)
+API -> Gemini: analizar_texto(texto_segmentado)
+Gemini --> API: informe_IA
+API -> DB: guardar_review(informe_IA)
+API --> Frontend: notificar_informe_disponible
+Frontend --> Estudiante: mostrar_informe_preliminar
+@enduml

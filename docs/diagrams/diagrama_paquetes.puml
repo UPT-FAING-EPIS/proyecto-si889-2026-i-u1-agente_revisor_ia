@@ -1,0 +1,35 @@
+@startuml
+' Diagrama de paquetes del sistema Agente Revisor IA
+package "Frontend (Next.js)" {
+  [UploadZone.jsx]
+  [PDFViewer.jsx]
+  [ThesisReviewPanel.jsx]
+  [ChatWindow.jsx]
+}
+package "API (FastAPI)" {
+  [main.py]
+  [routers.auth]
+  [routers.chat]
+  [routers.documents]
+  [routers.thesis_review]
+}
+package "Core" {
+  [auth.py]
+  [config.py]
+}
+package "Servicios" {
+  [pdf_service.py]
+  [gemini_service.py]
+  [supabase_auth_service.py]
+}
+package "Database" {
+  [supabase_repository.py]
+  [schemas.py]
+}
+[UploadZone.jsx] --> [main.py] : HTTP
+[PDFViewer.jsx] --> [main.py] : HTTP
+[main.py] --> [pdf_service.py] : llamadas internas
+[main.py] --> [gemini_service.py] : llamadas IA
+[main.py] --> [supabase_repository.py] : persistencia
+[gemini_service.py] --> [supabase_repository.py] : guarda reviews
+@enduml

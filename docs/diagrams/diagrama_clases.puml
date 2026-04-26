@@ -1,0 +1,42 @@
+@startuml
+' Diagrama de clases simplificado
+class User {
+  +UUID id
+  +string nombre
+  +string correo
+  +string rol
+  +datetime fecha_creacion
+}
+class Thesis {
+  +UUID id
+  +string titulo
+  +UUID autor_id
+  +datetime fecha_creacion
+}
+class Document {
+  +UUID id
+  +UUID thesis_id
+  +int version
+  +string archivo_url
+  +text texto_extraido
+}
+class Review {
+  +UUID id
+  +UUID document_id
+  +UUID autor_revisor_id
+  +string tipo
+  +text contenido
+  +string estado
+}
+class Comment {
+  +UUID id
+  +UUID review_id
+  +UUID usuario_id
+  +text texto
+  +datetime fecha
+}
+User "1" -- "*" Thesis
+Thesis "1" -- "*" Document
+Document "1" -- "*" Review
+Review "1" -- "*" Comment
+@enduml

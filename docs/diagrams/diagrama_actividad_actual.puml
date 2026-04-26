@@ -1,0 +1,18 @@
+@startuml
+start
+:Estudiante solicita revisión;
+:Envía documento por correo o Drive;
+:Asesor descarga y abre documento;
+:Asesor revisa y anota cambios;
+:Asesor envía observaciones;
+:Estudiante recibe observaciones;
+if (¿Observaciones completas?) then (no)
+  :Estudiante integra cambios;
+  :Estudiante reenvía documento;
+  :Asesor vuelve a revisar;
+  -> [Iterar] ;
+else (sí)
+  stop
+endif
+stop
+@enduml

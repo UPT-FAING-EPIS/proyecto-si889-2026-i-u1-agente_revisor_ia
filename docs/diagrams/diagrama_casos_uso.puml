@@ -1,0 +1,23 @@
+@startuml
+left to right direction
+actor Estudiante
+actor Revisor
+actor Administrador
+rectangle "Sistema - Agente Revisor IA" {
+  (Registrarse) as R1
+  (Iniciar sesión) as R2
+  (Subir tesis) as R3
+  (Solicitar revisión automática) as R4
+  (Revisar y comentar) as R5
+  (Generar informe final) as R6
+  (Gestionar usuarios) as R7
+}
+Estudiante --> R1
+Estudiante --> R2
+Estudiante --> R3
+Estudiante --> R4
+Revisor --> R5
+Revisor --> R6
+Administrador --> R7
+R5 --> R6
+@enduml
