@@ -1,0 +1,23 @@
+@startuml
+title Diagrama de Componentes: Arquitectura del Sistema
+package "Cliente" {
+  [Next.js App] as Frontend
+}
+package "Servidor" {
+  [FastAPI API] as API
+  [pdf_service] as PDF
+  [gemini_service] as Gemini
+  [supabase_repository] as Repo
+}
+package "Servicios Externos" {
+  [Supabase (DB, Auth, Storage)] as Supabase
+  [Proveedor LLM (Gemini API)] as ExternalLLM
+}
+
+Frontend --> API: HTTPS (REST)
+API --> PDF: llamada interna / tarea
+API --> Gemini: adapter call
+API --> Repo: llamadas DB
+Repo --> Supabase: SQL / Storage
+Gemini --> ExternalLLM: API HTTPS
+@enduml

@@ -1,0 +1,19 @@
+@startuml
+title Diagrama de Colaboración: Flujo de Revisión
+actor Estudiante
+participant Frontend
+participant RouterDocuments as "API: Documents Router"
+participant PDFService as "pdf_service"
+participant Gemini as "gemini_service"
+participant Supabase as "supabase_repository"
+
+Estudiante -> Frontend: Subir PDF
+Frontend -> RouterDocuments: POST /documents
+RouterDocuments -> PDFService: extraer_texto(file)
+PDFService --> RouterDocuments: texto_extraido
+RouterDocuments -> Supabase: guardar_metadatos y archivo
+RouterDocuments -> Gemini: solicitar_analisis(texto)
+Gemini --> RouterDocuments: informe_IA
+RouterDocuments -> Supabase: guardar_review
+RouterDocuments --> Frontend: notificar_informe
+@enduml

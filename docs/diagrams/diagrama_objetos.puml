@@ -1,0 +1,33 @@
+@startuml
+title Diagrama de Objetos: Instancias clave
+object User {
+  id
+  name
+  email
+  role
+}
+object Thesis {
+  id
+  title
+  author_id
+}
+object Document {
+  id
+  thesis_id
+  version
+  file_url
+  extracted_text
+}
+object Review {
+  id
+  document_id
+  reviewer_id
+  type
+  content
+  status
+}
+
+User --> Thesis
+Thesis --> Document
+Document --> Review
+@enduml

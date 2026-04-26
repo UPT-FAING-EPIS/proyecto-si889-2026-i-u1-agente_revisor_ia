@@ -1,0 +1,14 @@
+@startuml
+title Diagrama de Despliegue: Topología propuesta
+node "Cliente - Navegador" as Browser
+node "Hosting Frontend (Vercel/CDN)" as FrontendNode
+node "API Server (Docker)" as APINode
+node "Supabase (DB + Storage + Auth)" as SupabaseNode
+node "Proveedor LLM (Gemini API)" as LLMNode
+
+Browser --> FrontendNode: HTTPS
+FrontendNode --> APINode: HTTPS (REST)
+APINode --> SupabaseNode: SQL / Storage (HTTPS)
+APINode --> LLMNode: HTTPS (API)
+APINode --> APINode: Workers / Queue (background tasks)
+@enduml

@@ -1,43 +1,121 @@
-![Logo UPT](./media/logo-upt.png)
+<center>
 
-# UNIVERSIDAD PRIVADA DE TACNA
-## FACULTAD DE INGENIERÍA
-### Escuela Profesional de Ingeniería de Sistemas
+[comment]: <img src="./media/media/image1.png" style="width:1.088in;height:1.46256in" alt="escudo.png" />
 
-**Proyecto:** "Agente de IA para Revisión y Asesoría de Tesis"
+![./media/media/image1.png](./media/logo-upt.png)
 
-**Curso:** Patrones de Software  
-**Docente:** Ing. Patrick Cuadros Quiroga
+**UNIVERSIDAD PRIVADA DE TACNA**
 
-**Integrantes:**
-- **Ayala Ramos, Carlos Daniel (2022074266)**
-- **Loyola Vilca, Renzo Fernando (2021072615)**
-- **Vargas Candia, Hashira Belén (2022075480)**
+**FACULTAD DE INGENIERIA**
 
-**Tacna – Perú**  
-**2026**
+**Escuela Profesional de Ingeniería de Sistemas**
 
----
+**Proyecto *Agente de IA para Revisión y Asesoría de Tesis***
 
-# Sistema Agente de IA para Revisión y Asesoría de Tesis
-## Informe de Arquitectura de Software
-**Versión 1.0**
+Curso: *Patrones de Software*
 
-### Control de versiones
-| Versión | Hecha por | Revisada por | Aprobada por | Fecha | Motivo |
-| --- | --- | --- | --- | --- | --- |
-| 1.0 | - | - | - | 26/04/2026 | Versión inicial FD04 |
+Docente: *Patrick José Cuadros Quiroga*
 
----
+Integrantes:
 
-Proyecto: Agente Revisor IA para revisión de tesis
-Curso: SI889 - Arquitectura de Software
+***Ayala Ramos, Carlos Daniel (2022074266)***
+ 
+***Loyola Vilca, Renzo Fernando (2021072615)***
+ 
+***Vargas Candia, Hashira Belén (2022075480)***
+
+**Tacna – Perú**
+
+***2026***
+
+**  
+**
+
+</center>
+<div style="page-break-after: always; visibility: hidden">\pagebreak</div>
+
+|CONTROL DE VERSIONES||||||
+| :-: | :- | :- | :- | :- | :- |
+|Versión|Hecha por|Revisada por|Aprobada por|Fecha|Motivo|
+|1\.0|MPV|ELV|ARV|07/04/2026|Versión Original|
+
+
+
+
+
+
+
+**Sistema *Agente de IA para Revisión y Asesoría de Tesis***
+
+**Documento de Visión**
+
+**Versión *{1.0}***
+**
+
+<div style="page-break-after: always; visibility: hidden">\pagebreak</div>
+
+|CONTROL DE VERSIONES||||||
+| :-: | :- | :- | :- | :- | :- |
+|Versión|Hecha por|Revisada por|Aprobada por|Fecha|Motivo|
+|1\.0|MPV|ELV|ARV|10/10/2020|Versión Original|
+
+
+<div style="page-break-after: always; visibility: hidden">\pagebreak</div>
+
+
+**INDICE GENERAL**
+#
+
+- [1. Introducción](#1-introducción)
+	- [1.1 Propósito](#11-propósito)
+	- [1.2 Alcance](#12-alcance)
+	- [1.3 Definiciones, Siglas y Abreviaturas](#13-definiciones-siglas-y-abreviaturas)
+	- [1.4 Referencias](#14-referencias)
+	- [1.5 Visión General](#15-visión-general)
+- [2. Posicionamiento](#2-posicionamiento)
+	- [2.1 Oportunidad de negocio](#21-oportunidad-de-negocio)
+	- [2.2 Definición del problema](#22-definición-del-problema)
+- [3. Descripción de los interesados y usuarios](#3-descripción-de-los-interesados-y-usuarios)
+	- [3.1 Resumen de los interesados](#31-resumen-de-los-interesados)
+	- [3.2 Resumen de los usuarios](#32-resumen-de-los-usuarios)
+	- [3.3 Entorno de usuario](#33-entorno-de-usuario)
+	- [3.4 Perfiles de los interesados](#34-perfiles-de-los-interesados)
+	- [3.5 Perfiles de los usuarios](#35-perfiles-de-los-usuarios)
+	- [3.6 Necesidades de los interesados y usuarios](#36-necesidades-de-los-interesados-y-usuarios)
+- [4. Vista General del Producto](#4-vista-general-del-producto)
+	- [4.1 Perspectiva del producto](#41-perspectiva-del-producto)
+	- [4.2 Resumen de capacidades](#42-resumen-de-capacidades)
+	- [4.3 Suposiciones y dependencias](#43-suposiciones-y-dependencias)
+	- [4.4 Costos y precios](#44-costos-y-precios)
+	- [4.5 Licenciamiento e instalación](#45-licenciamiento-e-instalación)
+- [5. Características del producto](#5-características-del-producto)
+- [6. Restricciones](#6-restricciones)
+- [7. Rangos de calidad](#7-rangos-de-calidad)
+- [8. Precedencia y Prioridad](#8-precedencia-y-prioridad)
+- [9. Otros requerimientos del producto](#9-otros-requerimientos-del-producto)
+	- [9.1 Estándares legales](#91-estándares-legales)
+	- [9.2 Estándares de comunicación](#92-estándares-de-comunicación)
+	- [9.3 Estándares de cumplimiento de la plataforma](#93-estándares-de-cumplimiento-de-la-plataforma)
+	- [9.4 Estándares de calidad y seguridad](#94-estándares-de-calidad-y-seguridad)
+- [Conclusiones](#conclusiones)
+- [Recomendaciones](#recomendaciones)
+- [Bibliografía](#bibliografía)
+- [Webgrafía](#webgrafía)
+ 
+<div style="page-break-after: always; visibility: hidden">\pagebreak</div>
+ 
+**Informe de Visión**
+	 SIGUE ESTA ESTRUCTURA OSEA NO HABLO DEL CONTENIDO ESO RESPETALO DE LOS DOCUMENTOS FD04 Y FD05 QUE TE ESTOY PIDIENDO Q MODIFIQUES SOLO QUIERO QUE RESPETES LA ESTRUCTURA DEL LENGUAJE MARKDOWN OSEA D COMO ESTA PUESTO EL INDICE Y ASI 
+
+<div style="page-break-after: always; visibility: hidden">\pagebreak</div>
+
+## Contenido original (a partir de la sección \"INTRODUCCIÓN\")
 
 ## 1. INTRODUCCIÓN
 
 ### 1.1. Propósito (Diagrama 4+1)
 
-Este documento describe la arquitectura de software del proyecto "Agente Revisor IA" siguiendo el enfoque 4+1 de vistas arquitectónicas (vistas lógico, de procesos, de implementación, de despliegue y casos de uso). Su propósito es proporcionar una referencia técnica para el equipo de desarrollo y los stakeholders, facilitando decisiones de diseño, despliegue y evolución del sistema.
+Este documento describe la arquitectura de software del proyecto \"Agente Revisor IA\" siguiendo el enfoque 4+1 de vistas arquitectónicas (vistas lógico, de procesos, de implementación, de despliegue y casos de uso). Su propósito es proporcionar una referencia técnica para el equipo de desarrollo y los stakeholders, facilitando decisiones de diseño, despliegue y evolución del sistema.
 
 ### 1.2. Alcance
 
@@ -130,6 +208,8 @@ Diagrama referencia:
 ### 3.2.3. Diagrama de Colaboración (vista de diseño)
 
 La colaboración enfatiza mensajes y dependencias entre componentes: frontend ↔ API ↔ servicios (PDF, Gemini) ↔ DB. Este diagrama complementa la secuencia enfocándose en roles y enlaces persistentes.
+Diagrama disponible en:
+- docs/diagrams/diagrama_colaboracion.puml
 
 ### 3.2.4. Diagrama de Objetos
 
@@ -139,6 +219,8 @@ Objetos clave en runtime y su estado pasible de persistencia:
 - Revision {id, document_id, tipo, contenido, estado}
 - Observacion {id, revision_id, texto, resuelta}
 - Mensaje {id, thread_id, autor_id, texto, fecha}
+Diagrama disponible en:
+- docs/diagrams/diagrama_objetos.puml
 
 ### 3.2.5. Diagrama de Clases
 
@@ -155,6 +237,8 @@ La solución utiliza Supabase (PostgreSQL). Tablas principales:
 - documents (versiones)
 - reviews
 - comments/messages
+Diagrama disponible en:
+- docs/diagrams/diagrama_componentes.puml
 
 Esquema inicial y scripts:
 - backend/sql/schema.sql
@@ -214,6 +298,8 @@ Topología objetivo (entorno cloud o mixto):
 ### 3.5.1. Diagrama de despliegue
 
 El diagrama de despliegue debe mostrar contenedores, redes, puertos expuestos (443/HTTPS), y servicios gestionados. Mantener versión en docs/diagrams para control y revisiones.
+Diagrama disponible en:
+- docs/diagrams/diagrama_despliegue.puml
 
 ## 4. ATRIBUTOS DE CALIDAD DEL SOFTWARE
 
