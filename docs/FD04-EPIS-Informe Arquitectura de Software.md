@@ -211,6 +211,8 @@ La colaboraci贸n enfatiza mensajes y dependencias entre componentes: frontend 鈫
 Diagrama disponible en:
 - docs/diagrams/diagrama_colaboracion.puml
 
+![Diagrama de Colaboraci贸n](diagrams/diagrama_colaboracion.png)
+
 ### 3.2.4. Diagrama de Objetos
 
 Objetos clave en runtime y su estado pasible de persistencia:
@@ -221,6 +223,8 @@ Objetos clave en runtime y su estado pasible de persistencia:
 - Mensaje {id, thread_id, autor_id, texto, fecha}
 Diagrama disponible en:
 - docs/diagrams/diagrama_objetos.puml
+
+![Diagrama de Objetos](diagrams/diagrama_objetos.png)
 
 ### 3.2.5. Diagrama de Clases
 
@@ -239,6 +243,8 @@ La soluci贸n utiliza Supabase (PostgreSQL). Tablas principales:
 - comments/messages
 Diagrama disponible en:
 - docs/diagrams/diagrama_componentes.puml
+
+![Diagrama de Componentes](diagrams/diagrama_componentes.png)
 
 Esquema inicial y scripts:
 - backend/sql/schema.sql
@@ -300,6 +306,8 @@ Topolog铆a objetivo (entorno cloud o mixto):
 El diagrama de despliegue debe mostrar contenedores, redes, puertos expuestos (443/HTTPS), y servicios gestionados. Mantener versi贸n en docs/diagrams para control y revisiones.
 Diagrama disponible en:
 - docs/diagrams/diagrama_despliegue.puml
+
+![Diagrama de Despliegue](diagrams/diagrama_despliegue.png)
 
 ## 4. ATRIBUTOS DE CALIDAD DEL SOFTWARE
 
