@@ -3,14 +3,22 @@ const backendInternalUrl =
 
 const isGithubPages = process.env.GITHUB_PAGES === "true";
 const explicitBasePath = process.env.NEXT_PUBLIC_BASE_PATH?.trim() || "";
-const normalizedBasePath = explicitBasePath.replace(/^\/|\/$/g, "");
+const strippedBasePath = explicitBasePath.replace(/^\/|\/$/g, "");
 const repositoryName = process.env.GITHUB_REPOSITORY?.split("/")[1] || "";
-const basePath =
-  normalizedBasePath.length > 0
-    ? `/${normalizedBasePath}`
-    : isGithubPages && repositoryName
-      ? `/${repositoryName}`
-      : "";
+
+const resolveBasePath = () => {
+  if (strippedBasePath) {
+    return `/${strippedBasePath}`;
+  }
+
+  if (isGithubPages && repositoryName) {
+    return `/${repositoryName}`;
+  }
+
+  return "";
+};
+
+const basePath = resolveBasePath();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

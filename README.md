@@ -91,7 +91,7 @@ deben estar desplegados por separado (ej. Render, Railway, Fly, VPS). Para que f
 Los secretos de Supabase (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, etc.) permanecen en el backend,
 no deben exponerse en GitHub Pages.
 
-## Ejecucion local
+## Ejecución local
 
 ### 1) Backend
 
