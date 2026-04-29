@@ -19,7 +19,7 @@ const nextConfig = {
         output: "export",
         trailingSlash: true,
         basePath,
-        assetPrefix: basePath || undefined,
+        assetPrefix: basePath,
         images: {
           unoptimized: true,
         },
