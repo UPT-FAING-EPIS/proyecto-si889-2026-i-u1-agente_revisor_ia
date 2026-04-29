@@ -78,6 +78,19 @@ Variables clave:
 1. Copia `frontend/.env.local.example` a `frontend/.env.local`.
 2. Define `NEXT_PUBLIC_BACKEND_URL` (por defecto `http://localhost:8000`).
 
+### Despliegue en GitHub Pages (frontend estatico)
+
+El frontend se puede exportar a estatico y publicar en GitHub Pages. El backend FastAPI y Supabase
+deben estar desplegados por separado (ej. Render, Railway, Fly, VPS). Para que funcione:
+
+1. Configura en el backend `CORS_ORIGINS` con la URL final de GitHub Pages.
+2. En GitHub Actions define:
+   - `NEXT_PUBLIC_BACKEND_URL` con la URL publica del backend.
+   - (opcional) `NEXT_PUBLIC_BASE_PATH` con el nombre del repositorio si no coincide con `GITHUB_REPOSITORY`.
+
+Los secretos de Supabase (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, etc.) permanecen en el backend,
+no deben exponerse en GitHub Pages.
+
 ## Ejecucion local
 
 ### 1) Backend
