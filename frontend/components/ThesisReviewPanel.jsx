@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 
 import {
+  clearCachedChatMessages,
   createChatSession,
   evaluateThesis,
   listChatMessages,
   listChatSessions,
+  setCachedChatMessages,
 } from "../lib/api";
 
 function ThesisReviewPanel({ token, documentId, documentName }) {
@@ -21,6 +23,8 @@ function ThesisReviewPanel({ token, documentId, documentName }) {
   const [isCreatingChat, setIsCreatingChat] = useState(false);
   const [error, setError] = useState("");
 
+  const isChatControlsLoading = isInitializingChats || isLoadingMessages || isCreatingChat;
+
   useEffect(() => {
     setChatSessions([]);
     setActiveChatId("");
@@ -29,6 +33,14 @@ function ThesisReviewPanel({ token, documentId, documentName }) {
     setStats(null);
     setError("");
   }, [documentId]);
+
+  useEffect(() => {
+    if (!token || !activeChatId) {
+      return;
+    }
+
+    setCachedChatMessages(token, activeChatId, messages);
+  }, [activeChatId, messages, token]);
 
   const loadMessagesByChatId = async (chatId) => {
     if (!token || !chatId) {
@@ -90,6 +102,7 @@ function ThesisReviewPanel({ token, documentId, documentName }) {
       setError("");
 
       try {
+        let createdDuringBootstrap = false;
         let nextChatId = await syncSessions();
         if (!nextChatId) {
           const created = await createChatSession(token, {
@@ -104,9 +117,11 @@ function ThesisReviewPanel({ token, documentId, documentName }) {
           setChatSessions([created]);
           nextChatId = created.id;
           setActiveChatId(nextChatId);
+          createdDuringBootstrap = true;
+          setMessages([]);
         }
 
-        if (!cancelled && nextChatId) {
+        if (!cancelled && nextChatId && !createdDuringBootstrap) {
           await loadMessagesByChatId(nextChatId);
         }
       } catch (requestError) {
@@ -149,7 +164,8 @@ function ThesisReviewPanel({ token, documentId, documentName }) {
       setActiveChatId(created.id);
       setStats(null);
       setPrompt("");
-      await loadMessagesByChatId(created.id);
+      setMessages([]);
+      clearCachedChatMessages(token, created.id);
     } catch (requestError) {
       if (requestError instanceof Error) {
         setError(requestError.message);
@@ -189,8 +205,22 @@ function ThesisReviewPanel({ token, documentId, documentName }) {
       });
       setPrompt("");
 
-      await loadMessagesByChatId(activeChatId);
-      await syncSessions(activeChatId);
+      const localUserMessage = {
+        id: `local-user-${Date.now()}`,
+        role: "user",
+        content: cleanPrompt,
+      };
+      const localAssistantMessage = {
+        id: `local-assistant-${Date.now() + 1}`,
+        role: "assistant",
+        content: response?.review || "No se obtuvo una respuesta de evaluacion.",
+      };
+
+      setMessages((previous) => {
+        const nextMessages = [...previous, localUserMessage, localAssistantMessage];
+        setCachedChatMessages(token, activeChatId, nextMessages);
+        return nextMessages;
+      });
     } catch (requestError) {
       if (requestError instanceof Error) {
         setError(requestError.message);
@@ -213,60 +243,69 @@ function ThesisReviewPanel({ token, documentId, documentName }) {
         </p>
       </div>
 
-      <div className="chat-session-controls">
-        <label className="field-label" htmlFor="review-chat-session-select">
-          Chats de revision
-        </label>
-        <div className="chat-session-row">
-          <select
-            id="review-chat-session-select"
-            className="field-select"
-            value={activeChatId}
-            onChange={handleSelectChat}
-            disabled={!documentId || isInitializingChats || isCreatingChat || isReviewing}
-          >
-            <option value="">
-              {documentId ? "Selecciona un chat" : "Primero selecciona una tesis"}
-            </option>
-            {chatSessions.map((session) => (
-              <option key={session.id} value={session.id}>
-                {session.title}
+      <div className={`chat-controls-stack ${isChatControlsLoading ? "is-busy" : ""}`}>
+        <div className="chat-session-controls">
+          <label className="field-label" htmlFor="review-chat-session-select">
+            Chats de revision
+          </label>
+          <div className="chat-session-row">
+            <select
+              id="review-chat-session-select"
+              className="field-select"
+              value={activeChatId}
+              onChange={handleSelectChat}
+              disabled={!documentId || isInitializingChats || isCreatingChat || isReviewing}
+            >
+              <option value="">
+                {documentId ? "Selecciona un chat" : "Primero selecciona una tesis"}
               </option>
-            ))}
-          </select>
+              {chatSessions.map((session) => (
+                <option key={session.id} value={session.id}>
+                  {session.title}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              className="button button-secondary"
+              onClick={handleCreateChat}
+              disabled={!documentId || isInitializingChats || isCreatingChat || isReviewing}
+            >
+              {isCreatingChat ? "Creando..." : "Nuevo chat"}
+            </button>
+          </div>
+        </div>
+
+        <div className="chat-form review-chat-form">
+          <textarea
+            value={prompt}
+            onChange={(event) => setPrompt(event.target.value)}
+            rows={3}
+            placeholder="Ejemplo: Evalua solo coherencia metodologica y consistencia entre objetivos e hipotesis"
+            disabled={!documentId || !activeChatId || isReviewing || isLoadingMessages}
+          />
+        </div>
+
+        <div className="review-actions">
           <button
             type="button"
-            className="button button-secondary"
-            onClick={handleCreateChat}
-            disabled={!documentId || isInitializingChats || isCreatingChat || isReviewing}
+            className="button button-primary review-submit-button"
+            disabled={!token || !documentId || !activeChatId || isReviewing || isLoadingMessages}
+            onClick={onReview}
           >
-            {isCreatingChat ? "Creando..." : "Nuevo chat"}
+            {isReviewing ? "Analizando tesis completa..." : "Evaluar tesis"}
           </button>
         </div>
+
+        {isChatControlsLoading ? (
+          <div className="chat-controls-overlay" aria-live="polite" aria-busy="true">
+            <span className="spinner" aria-hidden="true" />
+            <span>Cargando chats...</span>
+          </div>
+        ) : null}
       </div>
 
-      <div className="chat-form review-chat-form">
-        <textarea
-          value={prompt}
-          onChange={(event) => setPrompt(event.target.value)}
-          rows={3}
-          placeholder="Ejemplo: Evalua solo coherencia metodologica y consistencia entre objetivos e hipotesis"
-          disabled={!documentId || !activeChatId || isReviewing || isLoadingMessages}
-        />
-      </div>
-
-      <div className="review-actions">
-        <button
-          type="button"
-          className="button button-primary"
-          disabled={!token || !documentId || !activeChatId || isReviewing || isLoadingMessages}
-          onClick={onReview}
-        >
-          {isReviewing ? "Analizando tesis completa..." : "Evaluar tesis"}
-        </button>
-      </div>
-
-      {!messages.length && !isReviewing ? (
+      {!messages.length && !isReviewing && !isInitializingChats && !isLoadingMessages ? (
         <div className="review-placeholder">
           <p>
             La IA guardara cada revision en este chat para que puedas seguir iterando sobre

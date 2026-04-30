@@ -11,6 +11,62 @@ class ApiError extends Error {
   }
 }
 
+const chatSessionsCache = new Map();
+const chatMessagesCache = new Map();
+
+function clonePayload(payload) {
+  if (payload == null) {
+    return payload;
+  }
+  return JSON.parse(JSON.stringify(payload));
+}
+
+function buildTokenScope(token) {
+  if (!token) {
+    return "anon";
+  }
+  return token.slice(0, 16);
+}
+
+function buildSessionsCacheKey(token, { documentId = "", mode = "" } = {}) {
+  return `${buildTokenScope(token)}::${documentId}::${mode}`;
+}
+
+function buildMessagesCacheKey(token, chatId) {
+  return `${buildTokenScope(token)}::${chatId || ""}`;
+}
+
+function invalidateChatSessionsByDocument(token, documentId = "") {
+  const tokenScope = buildTokenScope(token);
+  const documentPrefix = `${tokenScope}::${documentId}::`;
+  for (const cacheKey of chatSessionsCache.keys()) {
+    if (cacheKey.startsWith(documentPrefix)) {
+      chatSessionsCache.delete(cacheKey);
+    }
+  }
+}
+
+function setCachedChatSessions(token, { documentId = "", mode = "" } = {}, sessions = []) {
+  const cacheKey = buildSessionsCacheKey(token, { documentId, mode });
+  chatSessionsCache.set(cacheKey, clonePayload(sessions || []));
+}
+
+function setCachedChatMessages(token, chatId, messages = []) {
+  if (!chatId) {
+    return;
+  }
+  const cacheKey = buildMessagesCacheKey(token, chatId);
+  chatMessagesCache.set(cacheKey, clonePayload(messages || []));
+}
+
+function clearCachedChatMessages(token, chatId) {
+  if (!chatId) {
+    return;
+  }
+  const cacheKey = buildMessagesCacheKey(token, chatId);
+  chatMessagesCache.delete(cacheKey);
+}
+
 async function apiRequest(path, options = {}) {
   const {
     method = "GET",
@@ -86,6 +142,12 @@ function listDocuments(token) {
 }
 
 function listChatSessions(token, { documentId, mode } = {}) {
+  const cacheKey = buildSessionsCacheKey(token, { documentId, mode });
+  const cached = chatSessionsCache.get(cacheKey);
+  if (cached) {
+    return Promise.resolve(clonePayload(cached));
+  }
+
   const query = new URLSearchParams();
   if (documentId) {
     query.set("document_id", documentId);
@@ -100,6 +162,10 @@ function listChatSessions(token, { documentId, mode } = {}) {
   return apiRequest(path, {
     method: "GET",
     token,
+  }).then((rows) => {
+    const normalized = rows || [];
+    setCachedChatSessions(token, { documentId, mode }, normalized);
+    return clonePayload(normalized);
   });
 }
 
@@ -112,13 +178,32 @@ function createChatSession(token, { documentId, mode, title }) {
       mode,
       title,
     },
+  }).then((created) => {
+    if (created) {
+      const cacheKey = buildSessionsCacheKey(token, { documentId, mode });
+      const current = chatSessionsCache.get(cacheKey) || [];
+      const deduped = [created, ...current.filter((session) => session.id !== created.id)];
+      chatSessionsCache.set(cacheKey, clonePayload(deduped));
+      clearCachedChatMessages(token, created.id);
+    }
+    return created;
   });
 }
 
 function listChatMessages(token, chatId) {
+  const cacheKey = buildMessagesCacheKey(token, chatId);
+  const cached = chatMessagesCache.get(cacheKey);
+  if (cached) {
+    return Promise.resolve(clonePayload(cached));
+  }
+
   return apiRequest(`/api/chats/${encodeURIComponent(chatId)}/messages`, {
     method: "GET",
     token,
+  }).then((rows) => {
+    const normalized = rows || [];
+    setCachedChatMessages(token, chatId, normalized);
+    return clonePayload(normalized);
   });
 }
 
@@ -126,6 +211,9 @@ function deleteDocument(token, documentId) {
   return apiRequest(`/api/documents/${encodeURIComponent(documentId)}`, {
     method: "DELETE",
     token,
+  }).then((response) => {
+    invalidateChatSessionsByDocument(token, documentId);
+    return response;
   });
 }
 
@@ -141,6 +229,11 @@ function uploadDocument(token, file, replaceDocumentId = "") {
     token,
     body: formData,
     isFormData: true,
+  }).then((response) => {
+    if (replaceDocumentId) {
+      invalidateChatSessionsByDocument(token, replaceDocumentId);
+    }
+    return response;
   });
 }
 
@@ -159,6 +252,7 @@ function evaluateThesis(token, documentId, chatId, message) {
 export {
   API_BASE_URL,
   ApiError,
+  clearCachedChatMessages,
   createChatSession,
   deleteDocument,
   evaluateThesis,
@@ -168,5 +262,7 @@ export {
   listDocuments,
   loginUser,
   registerUser,
+  setCachedChatMessages,
+  setCachedChatSessions,
   uploadDocument,
 };

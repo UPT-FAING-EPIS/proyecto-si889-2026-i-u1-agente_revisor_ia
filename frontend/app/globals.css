@@ -365,6 +365,12 @@ select {
   justify-content: flex-start;
 }
 
+.review-submit-button {
+  padding: 8px 12px;
+  font-size: 14px;
+  min-width: 150px;
+}
+
 .review-placeholder {
   border: 1px dashed var(--line);
   border-radius: 14px;
@@ -417,6 +423,39 @@ select {
 .chat-session-controls {
   display: grid;
   gap: 8px;
+}
+
+.chat-controls-stack {
+  position: relative;
+  display: grid;
+  gap: 10px;
+}
+
+.chat-controls-stack.is-busy {
+  pointer-events: none;
+}
+
+.chat-controls-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 12px;
+  background: rgba(245, 250, 253, 0.82);
+  color: var(--text-muted);
+  font-weight: 700;
+  z-index: 2;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #b8cad8;
+  border-top-color: #0e6e99;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
 .chat-session-row {
@@ -588,6 +627,15 @@ select {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 

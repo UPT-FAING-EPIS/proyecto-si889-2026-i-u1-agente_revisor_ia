@@ -1,0 +1,58 @@
+name: Deploy frontend to Vercel
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/vercel-frontend-deploy.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      BACKEND_INTERNAL_URL: https://bakcend-revisor.onrender.com
+      NEXT_PUBLIC_BACKEND_URL: https://bakcend-revisor.onrender.com
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+      - name: Pull Vercel project settings
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: vercel pull --yes --environment=production --token "$VERCEL_TOKEN"
+      - name: Build
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          vercel build --prod \
+            --token "$VERCEL_TOKEN" \
+            --build-env BACKEND_INTERNAL_URL="$BACKEND_INTERNAL_URL" \
+            --build-env NEXT_PUBLIC_BACKEND_URL="$NEXT_PUBLIC_BACKEND_URL"
+      - name: Deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          vercel deploy --prebuilt --prod \
+            --token "$VERCEL_TOKEN" \
+            --env BACKEND_INTERNAL_URL="$BACKEND_INTERNAL_URL" \
+            --env NEXT_PUBLIC_BACKEND_URL="$NEXT_PUBLIC_BACKEND_URL"

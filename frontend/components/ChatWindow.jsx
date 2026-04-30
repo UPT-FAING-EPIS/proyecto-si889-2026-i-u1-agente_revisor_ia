@@ -5,9 +5,11 @@ import { useEffect, useRef, useState } from "react";
 
 import {
   API_BASE_URL,
+  clearCachedChatMessages,
   createChatSession,
   listChatMessages,
   listChatSessions,
+  setCachedChatMessages,
 } from "../lib/api";
 
 function createMessage(role, content) {
@@ -28,6 +30,8 @@ function ChatWindow({ token, documentId, documentName }) {
   const [isInitializingChats, setIsInitializingChats] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isCreatingChat, setIsCreatingChat] = useState(false);
+
+  const isChatControlsLoading = isInitializingChats || isLoadingMessages || isCreatingChat;
 
   const bottomRef = useRef(null);
 
@@ -68,6 +72,14 @@ function ChatWindow({ token, documentId, documentName }) {
     setLocalError("");
     setActiveAssistantId("");
   }, [documentId]);
+
+  useEffect(() => {
+    if (!token || !activeChatId) {
+      return;
+    }
+
+    setCachedChatMessages(token, activeChatId, messages);
+  }, [activeChatId, messages, token]);
 
   const loadMessagesByChatId = async (chatId) => {
     if (!token || !chatId) {
@@ -130,6 +142,7 @@ function ChatWindow({ token, documentId, documentName }) {
       setLocalError("");
 
       try {
+        let createdDuringBootstrap = false;
         let nextChatId = await syncSessions();
         if (!nextChatId) {
           const created = await createChatSession(token, {
@@ -142,9 +155,11 @@ function ChatWindow({ token, documentId, documentName }) {
           setChatSessions([created]);
           nextChatId = created.id;
           setActiveChatId(nextChatId);
+          createdDuringBootstrap = true;
+          setMessages([]);
         }
 
-        if (!cancelled && nextChatId) {
+        if (!cancelled && nextChatId && !createdDuringBootstrap) {
           await loadMessagesByChatId(nextChatId);
         }
       } catch (requestError) {
@@ -185,7 +200,8 @@ function ChatWindow({ token, documentId, documentName }) {
       });
       setChatSessions((previous) => [created, ...previous]);
       setActiveChatId(created.id);
-      await loadMessagesByChatId(created.id);
+      setMessages([]);
+      clearCachedChatMessages(token, created.id);
       setQuestion("");
     } catch (requestError) {
       if (requestError instanceof Error) {
@@ -299,36 +315,45 @@ function ChatWindow({ token, documentId, documentName }) {
         </p>
       </div>
 
-      <div className="chat-session-controls">
-        <label className="field-label" htmlFor="chat-session-select">
-          Chats de este documento
-        </label>
-        <div className="chat-session-row">
-          <select
-            id="chat-session-select"
-            className="field-select"
-            value={activeChatId}
-            onChange={handleSelectChat}
-            disabled={!documentId || isInitializingChats || isCreatingChat || isLoading}
-          >
-            <option value="">
-              {documentId ? "Selecciona un chat" : "Primero selecciona una tesis"}
-            </option>
-            {chatSessions.map((session) => (
-              <option key={session.id} value={session.id}>
-                {session.title}
+      <div className={`chat-controls-stack ${isChatControlsLoading ? "is-busy" : ""}`}>
+        <div className="chat-session-controls">
+          <label className="field-label" htmlFor="chat-session-select">
+            Chats de este documento
+          </label>
+          <div className="chat-session-row">
+            <select
+              id="chat-session-select"
+              className="field-select"
+              value={activeChatId}
+              onChange={handleSelectChat}
+              disabled={!documentId || isInitializingChats || isCreatingChat || isLoading}
+            >
+              <option value="">
+                {documentId ? "Selecciona un chat" : "Primero selecciona una tesis"}
               </option>
-            ))}
-          </select>
-          <button
-            type="button"
-            className="button button-secondary"
-            onClick={handleCreateChat}
-            disabled={!documentId || isInitializingChats || isCreatingChat || isLoading}
-          >
-            {isCreatingChat ? "Creando..." : "Nuevo chat"}
-          </button>
+              {chatSessions.map((session) => (
+                <option key={session.id} value={session.id}>
+                  {session.title}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              className="button button-secondary"
+              onClick={handleCreateChat}
+              disabled={!documentId || isInitializingChats || isCreatingChat || isLoading}
+            >
+              {isCreatingChat ? "Creando..." : "Nuevo chat"}
+            </button>
+          </div>
         </div>
+
+        {isChatControlsLoading ? (
+          <div className="chat-controls-overlay" aria-live="polite" aria-busy="true">
+            <span className="spinner" aria-hidden="true" />
+            <span>Cargando chats...</span>
+          </div>
+        ) : null}
       </div>
 
       <div className="chat-messages">
