@@ -26,6 +26,8 @@ CHAT_CANDIDATES = [
 ]
 
 EMBEDDING_CANDIDATES = [
+    "text-embedding-005",
+    "models/text-embedding-005",
     "text-embedding-004",
     "models/text-embedding-004",
     "gemini-embedding-001",
@@ -132,10 +134,33 @@ def get_gemini_api_key(env_file: Path) -> tuple[str | None, str | None]:
     return None, None
 
 
+def get_gemini_api_version(env_file: Path) -> str | None:
+    env_version = os.getenv("GEMINI_API_VERSION")
+    if env_version:
+        return env_version.strip() or None
+
+    parsed = parse_env_file(env_file)
+    file_version = parsed.get("GEMINI_API_VERSION")
+    if file_version:
+        return file_version.strip() or None
+
+    return None
+
+
 def get_client(env_file: Path) -> tuple[genai.Client | None, str | None]:
     api_key, source = get_gemini_api_key(env_file)
     if not api_key:
         return None, None
+
+    api_version = get_gemini_api_version(env_file)
+    if api_version:
+        return (
+            genai.Client(
+                api_key=api_key,
+                http_options={"api_version": api_version},
+            ),
+            source,
+        )
 
     return genai.Client(api_key=api_key), source
 

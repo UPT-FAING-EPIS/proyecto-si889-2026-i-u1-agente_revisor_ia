@@ -113,6 +113,8 @@ Reglas Operativas de Respuesta:
 
 DEFAULT_EMBEDDING_DIM = 3072
 DEFAULT_EMBEDDING_MODEL_FALLBACKS = (
+    "text-embedding-005",
+    "models/text-embedding-005",
     "text-embedding-004",
     "models/text-embedding-004",
     "gemini-embedding-001",
@@ -487,7 +489,14 @@ class GeminiService:
                 "GEMINI_API_KEY (o API_GEMINI) no esta configurado en el backend."
             )
 
-        self._client = genai.Client(api_key=self.settings.gemini_api_key)
+        api_version = (self.settings.gemini_api_version or "").strip()
+        if api_version:
+            self._client = genai.Client(
+                api_key=self.settings.gemini_api_key,
+                http_options={"api_version": api_version},
+            )
+        else:
+            self._client = genai.Client(api_key=self.settings.gemini_api_key)
 
     def embed_documents(self, chunks: list[str]) -> list[list[float]]:
         return [

@@ -19,6 +19,10 @@ class Settings(BaseSettings):
         default="",
         validation_alias=AliasChoices("GEMINI_API_KEY", "API_GEMINI"),
     )
+    gemini_api_version: str = Field(
+        default="v1",
+        validation_alias=AliasChoices("GEMINI_API_VERSION"),
+    )
     gemini_chat_model: str = Field(default="gemini-2.0-flash")
     gemini_embedding_model: str = Field(default="models/text-embedding-004")
     gemini_embedding_output_dimensionality: int = Field(
