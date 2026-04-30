@@ -41,11 +41,11 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          BACKEND_INTERNAL_URL: ${{ env.BACKEND_INTERNAL_URL }}
+          NEXT_PUBLIC_BACKEND_URL: ${{ env.NEXT_PUBLIC_BACKEND_URL }}
         run: |
           vercel build --prod \
-            --token "$VERCEL_TOKEN" \
-            --build-env BACKEND_INTERNAL_URL="$BACKEND_INTERNAL_URL" \
-            --build-env NEXT_PUBLIC_BACKEND_URL="$NEXT_PUBLIC_BACKEND_URL"
+            --token "$VERCEL_TOKEN"
       - name: Deploy
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
